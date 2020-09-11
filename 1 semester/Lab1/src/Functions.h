@@ -6,23 +6,17 @@
 #define LAB1_FUNCTIONS_H
 
 #include "Sort.h"
+#include <string>
 
-template <typename T>
 class Functions {
 
 public:
 
-    static void save_to_bin_file(std::vector<std::ofstream>& files, const int& index,  const std::vector<T>& array){
-        for(auto i: array){
-            files[index].write((char*)&i, sizeof(i));
-        }
-    }
+    static void save_to_bin_file(std::ofstream& files,  const std::vector<int>& array);
 
-    static void load_from_bin_file(std::vector<std::ifstream>& files,  const std::vector<T>& array){
+    static std::vector<int> count(const int& size, const int& files_quantity);
 
-
-
-    }
+    static void load_from_bin_file(std::vector<std::ifstream>& files,  const std::vector<int>& array);
 
 };
 
