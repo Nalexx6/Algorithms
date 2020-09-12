@@ -12,12 +12,17 @@ class Functions {
 
 public:
 
-    static void save_to_bin_file(std::ofstream& files,  const std::vector<int>& array);
+    static void save_to_bin_file(std::ofstream& file,  const std::vector<int>& array);
 
-    static std::vector<int> count(const int& size, const int& files_quantity);
+    static std::vector<std::ofstream> create_files(const int& files_quantity);
+
+    static void delete_files(std::vector<std::ofstream>& files);
+
+    static void save_all_to_files(const std::vector<int>& array, std::vector<std::ofstream> &files, const int& limit);
 
     static void load_from_bin_file(std::vector<std::ifstream>& files,  const std::vector<int>& array);
 
+    static std::vector<int> count(const int& size, const int& files_quantity);
 };
 
 

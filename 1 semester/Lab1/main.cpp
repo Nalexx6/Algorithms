@@ -28,34 +28,18 @@ int main() {
     }
     std::cout<<"\n";
 
-    std::vector<int> sizes = Functions::count(size, file_quantity);
-    for(int& i: sizes){
-        std::cout<< i << " ";
+
+    std::vector<std::ofstream> files = Functions::create_files(file_quantity);
+    std::cout << "sfsdfsd\n";
+    Functions::save_all_to_files(array, files, limit);
+//
+//    Functions::save_to_bin_file(files[0], array);
+//    Functions::save_to_bin_file(files[0], array);
+
+
+    for(auto& f: files){
+//        std::remove((const char *) f);
     }
-    std::cout<< "\n";
-
-    std::string file_path, number = "a";
-    std::vector<std::ofstream> files (file_quantity);
-    for(int i = 0; i < file_quantity; i++) {
-
-        number[0] = char(i + 48);
-        file_path = "../src/Files/" + number + ".txt";
-
-        files[i].open (file_path, std::ios::binary | std::ios::app);
-
-    }
-//    std::cout<<"efsdfdsf\n";
-    Functions::save_to_bin_file(files[0], array);
-
-    files[0].close();
-
-    Sort::merge_sort(array, 0, size, false);
-
-    for(auto i: array){
-        std::cout<< i << " ";
-    }
-
-    std::cout<<"\n";
 
 
 }
