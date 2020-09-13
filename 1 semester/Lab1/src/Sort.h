@@ -14,15 +14,14 @@ class Sort {
 
 private:
 
-    static void merge(std::vector<int>& array, std::vector<int>& for_merge, int lo, int mid, int hi, bool printing);
+    static void merge(std::vector<int>& array, std::vector<int>& for_merge, int lo, int mid, int hi);
 
-    static void sort(std::vector<int>& array, std::vector<int>& for_merge, int lo, int hi, bool printing);
+    static void sort(std::vector<int>& array, std::vector<int>& for_merge, int lo, int hi);
 
 public:
 
-    static void merge_sort(std::vector<int>& array, int lo, int hi, bool printing);
+    static void merge_sort(std::vector<int>& array, int lo, int hi);
 
-    static void print_array(std::vector <int>& array, int& lo, int& hi);
 
 };
 

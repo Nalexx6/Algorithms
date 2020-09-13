@@ -4,7 +4,7 @@
 
 #include "Sort.h"
 
-void Sort::merge(std::vector<int> &array, std::vector<int> &for_merge, int lo, int mid, int hi, bool printing) {
+void Sort::merge(std::vector<int> &array, std::vector<int> &for_merge, int lo, int mid, int hi) {
 
     for(int i = lo; i < hi + 1; i++){
         for_merge[i] = array[i];
@@ -26,42 +26,32 @@ void Sort::merge(std::vector<int> &array, std::vector<int> &for_merge, int lo, i
         }
 
     }
-    if(printing){
-        std::cout<<"Now we will merge our array\n";
-        print_array(array, lo, hi);
-    }
+
 
 }
 
-void Sort::sort(std::vector<int> &array, std::vector<int> &for_merge, int lo, int hi, bool printing) {
+void Sort::sort(std::vector<int> &array, std::vector<int> &for_merge, int lo, int hi) {
 
     if(hi <= lo)
         return;
     int mid = lo + (hi - lo) / 2;
-    sort(array, for_merge, lo, mid, printing);
-    sort(array, for_merge, mid + 1, hi, printing);
-    merge(array, for_merge, lo ,mid, hi, printing);
+    sort(array, for_merge, lo, mid);
+    sort(array, for_merge, mid + 1, hi);
+    merge(array, for_merge, lo ,mid, hi);
 
 }
 
-void Sort::merge_sort(std::vector<int> &array, int lo, int hi, bool printing) {
+void Sort::merge_sort(std::vector<int> &array, int lo, int hi) {
 
 
 
         std::vector<int> for_merge (hi - lo + 1);
-        if(printing){
-            std::cout<<"This merge sort use top-down algorithm\n";
-            print_array(array, lo ,hi);
 
-        }
-        sort(array, for_merge, lo, hi, printing);
+        sort(array, for_merge, lo, hi);
 //        delete[] for_merge;
 
 }
 
-void Sort::print_array(std::vector<int> &array, int &lo, int &hi) {
 
-
-}
 
 

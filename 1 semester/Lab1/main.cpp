@@ -20,26 +20,40 @@ int main() {
     std::vector<int> array;
 
     for(int i = 0; i < size; i++){
-        array.push_back(Random::rand(0, file_quantity * size));
+        array.push_back(Random::rand(0, size * 2));
     }
 
-    for(auto i: array){
-        std::cout<< i << " ";
-    }
-    std::cout<<"\n";
+//    for(auto i: array){
+//        std::cout<< i << " ";
+//    }
+//    std::cout<<"\n";
 
 
-    std::vector<std::ofstream> files = Functions::create_files(file_quantity);
-    std::cout << "sfsdfsd\n";
-    Functions::save_all_to_files(array, files, limit);
+    std::vector<std::ofstream> for_write = Functions::create_files(file_quantity);
+//    std::cout << "sfsdfsd\n";
+    Functions::save_all_to_files(array, for_write, limit);
 //
 //    Functions::save_to_bin_file(files[0], array);
 //    Functions::save_to_bin_file(files[0], array);
 
 
-    for(auto& f: files){
-//        std::remove((const char *) f);
+    for(auto& f: for_write){
+        f.close();
+
     }
 
+//    std::cout<< "Start of sorting" << std::endl;
+
+    std::vector<std::ifstream> for_load = Functions::reopen_files(file_quantity);
+
+//    std::cout<< "Start of sorting" << std::endl;
+
+    Functions::sort(for_load, for_write, array, limit, size);
+
+
+    for(auto& f: for_load){
+        f.close();
+
+    }
 
 }
