@@ -193,29 +193,32 @@ void Functions::sort(std::vector<std::ifstream> &read, std::vector<std::ofstream
     to_ignore.assign(read.size(), false);
     local_ignore.assign(read.size(), false);
 
-    int empty_file = 0;
+    int empty_file = 0, ignore_sum = 0;
     for(std::size_t i = 0; i < read.size(); i++){
 
         read[i].seekg(0, std::ios::end);
         sizes[i] = read[i].tellg();
 //        std::cout<< i << ": " << sizes[i] << std::endl;
         if(sizes[i] == 0){
+            to_ignore[i] = true;
+            local_ignore[i] = true;
             empty_file = i;
+            ignore_sum++;
 //            std::cout<<i << " ffdsfdsf\n";
         }
         read[i].seekg(0, std::ios::beg);
 
     }
 
-    to_ignore[empty_file] = true;
-    local_ignore[empty_file] = true;
+//    to_ignore[empty_file] = true;
+//    local_ignore[empty_file] = true;
 
     std::cout<< "Start of sorting" << std::endl;
     std::string number = "a", file_path;
     std::vector<int> cur_values(read.size());
     int new_empty = empty_file, value, next, file_pos, bin_pos, file_number;
-//    std::vector<int> limits;
-//    limits.assign(read.size(), 0);
+    std::vector<int> limits;
+    limits.assign(read.size(), 0);
     while(true) {
 
         read[empty_file].close();
@@ -225,84 +228,91 @@ void Functions::sort(std::vector<std::ifstream> &read, std::vector<std::ofstream
 
         while (new_empty == empty_file) {
 
-                for (std::size_t i = 0; i < read.size(); i++) {
+            for (std::size_t i = 0; i < read.size(); i++) {
 
-                    if(!to_ignore[i]) {
-                        read[i].read((char *) &value, sizeof(value));
-                        memory.emplace_back(value);
-                        cur_values[i] = value;
-//                        limits[i]++;
-                    }
-
+                if(!to_ignore[i]) {
+                    read[i].read((char *) &value, sizeof(value));
+                    memory.emplace_back(value);
+                    cur_values[i] = value;
+                    limits[i]++;
                 }
 
+            }
 
-                Sort::merge_sort(memory, 0, memory.size() - 1);
-                for(std::size_t j = 0; j < memory.size()/2; j++) {
-                    int temp_1 = memory[j];
-                    memory[j] = memory[memory.size() - 1 - j];
-                    memory[memory.size() - 1 - j] = temp_1;
-                }
 
-//                for(auto i: memory){
-//                    std::cout<<i << " ";
-//                }
-//                std::cout<<std::endl;
+            Sort::merge_sort(memory, 0, memory.size() - 1);
+            for(std::size_t j = 0; j < memory.size()/2; j++) {
+                int temp_1 = memory[j];
+                memory[j] = memory[memory.size() - 1 - j];
+                memory[memory.size() - 1 - j] = temp_1;
+            }
+
+//            for(auto i: memory){
+//                std::cout<<i << " ";
+//            }
+//            std::cout<<std::endl;
 
 //                std::cout<<"gvy"<<std::endl;
-                while(!memory.empty()){
+            while(!memory.empty()){
 //                    std::cout<<"gvy"<<std::endl;
-                    value = memory[memory.size() - 1];
-                    file_number = find_file(cur_values, value, local_ignore);
-                    file_pos = read[file_number].tellg();
+                value = memory[memory.size() - 1];
+                file_number = find_file(cur_values, value, local_ignore);
+                file_pos = read[file_number].tellg();
 //                    std::cout<<value<< " " <<file_number<<" lol" <<std::endl;
-                    save_to_bin_file(write[empty_file], value);
+                save_to_bin_file(write[empty_file], value);
 
-                    memory.pop_back();
-
-
-
-                    if(file_pos != sizes[file_number]){
-                        read[file_number].read((char *) &next, sizeof(next));
-
-                        if (next >= value) {
-                            bin_pos = bin_searh(next, memory);
-                            if(bin_pos == memory.size()){
-                                memory.emplace_back(next);
-                            }
-                            else{
-                            memory.insert(memory.begin() + bin_pos, next);
-                            }
-//                            limits[accord[value]]++;
-                            cur_values[file_number] = next;
-
-                        } else{
-                            read[file_number].seekg(file_pos);
-//                            limits[accord[value]]--;
-                            local_ignore[file_number] = true;
+                memory.pop_back();
 
 
+
+                if(file_pos != sizes[file_number]){
+                    read[file_number].read((char *) &next, sizeof(next));
+
+                    if (next >= value && (limits[file_number] < limit || ignore_sum >= read.size() - 2)) {
+                        bin_pos = bin_searh(next, memory);
+                        if(bin_pos == memory.size()){
+                            memory.emplace_back(next);
                         }
+                        else{
+                        memory.insert(memory.begin() + bin_pos, next);
+                        }
+                        limits[file_number]++;
+                        cur_values[file_number] = next;
+
                     } else{
-                        new_empty = file_number;
-                        to_ignore[new_empty] = true;
-                        local_ignore[new_empty] = true;
+                        read[file_number].seekg(file_pos);
+//                        limits[file_number] = 0;
+                        local_ignore[file_number] = true;
+//                        ignore_sum++;
+
 
                     }
-
+                } else{
+                    new_empty = file_number;
+                    to_ignore[new_empty] = true;
+                    local_ignore[new_empty] = true;
+                    ignore_sum++;
 
                 }
+
+
+            }
 
 
 //                std::cout << "lol\n";
+            for(int & i : limits){
+                i = 0;
+            }
 
-                for(std::size_t i = 0; i < local_ignore.size(); i++){
-                   local_ignore[i] = to_ignore[i];
-                }
+
+            for(std::size_t i = 0; i < local_ignore.size(); i++){
+               local_ignore[i] = to_ignore[i];
+            }
 //                std::cin>>breakpoint;
 
 
         }
+//        std::cout<<new_empty<<"\n";
 
         to_ignore[empty_file] = false;
         local_ignore[empty_file] = false;
@@ -334,8 +344,6 @@ void Functions::sort(std::vector<std::ifstream> &read, std::vector<std::ofstream
 
     }
 
-    std::cout<<"mmaasd" << std::endl;
-
     std::vector<int> res = load_all_file(read[empty_file]);
 
 
@@ -344,11 +352,9 @@ void Functions::sort(std::vector<std::ifstream> &read, std::vector<std::ofstream
 //    }
 
     if(is_sorted(res)){
-        std::cout<<"Our array was succesfully sorted\n";
+        std::cout<<"Our array was succesfully sorted and has size = " << res.size() << "\n";
     }
-    std::cout<<"fsdfsdfsdf\n";
 
-//    1 2 3 12 14 14 17 20 38 40
 
 }
 

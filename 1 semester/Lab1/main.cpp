@@ -3,6 +3,7 @@
 #include "src/Random.h"
 //#include "src/Sort.h"
 #include "src/Functions.h"
+#include <ctime>
 
 int main() {
 
@@ -47,9 +48,13 @@ int main() {
     std::vector<std::ifstream> for_load = Functions::reopen_files(file_quantity);
 
 //    std::cout<< "Start of sorting" << std::endl;
+    clock_t start = clock();
 
     Functions::sort(for_load, for_write, array, limit, size);
 
+    clock_t end = clock();
+
+    std::cout<<end - start <<"ms\n";
 
     for(auto& f: for_load){
         f.close();
