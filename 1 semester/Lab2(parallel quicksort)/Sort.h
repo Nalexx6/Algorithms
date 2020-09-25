@@ -44,7 +44,7 @@ public:
     }
 
 
-    static void quick_sort
+
 
 };
 
