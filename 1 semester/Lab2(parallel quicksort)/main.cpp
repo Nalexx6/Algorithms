@@ -19,7 +19,12 @@ int main() {
     }
 
     Sort::shuffle(bolts, 0, quantity - 1);
-    Sort::shuffle(nuts, 0, quantity);
+    Sort::shuffle(nuts, 0, quantity - 1);
+
+//    Sort::print(nuts);
+//    Sort::print(bolts);
+
+    Sort::nuts_and_bolts_match(bolts, nuts, quantity);
 
 
 }

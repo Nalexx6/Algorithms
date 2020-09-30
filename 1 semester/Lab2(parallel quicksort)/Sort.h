@@ -7,41 +7,35 @@
 
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <random>
 
 class Sort {
 
 private:
 
-    static int partition( std::vector<int>& bolts, std::vector<int>& nuts, int& lo, int& hi){
+    static int rand(int lo, int hi);
 
+    static int partition( std::vector<int>& array, int& lo, int& hi, int& pivot);
 
+    static void sort( std::vector<int>& bolts, std::vector<int>& nuts, int lo, int hi);
 
-    }
+    static bool is_sorted(std::vector<int> &array);
 
-    static void sort( std::vector<int>& bolts, std::vector<int>& nuts, int lo, int hi){
-
-        if(hi <= lo)
-            return;
-
-        int j = partition(bolts, nuts, lo, hi);
-
-        sort(bolts, nuts, lo, j - 1);
-
-        sort(bolts, nuts, j + 1, hi);
-
-
-
-    }
 
 public:
 
-    static void shuffle(std::vector<int>& array, const int& lo, const int& hi){
+    static void shuffle(std::vector<int>& array, const int& lo, const int& hi);
 
-        for(int i = 1; i < hi - lo + 1; i++){
-            std::swap(array[lo + i], array[lo + rand() % i]);
-        }
+    static void nuts_and_bolts_match(std::vector<int>& bolts, std::vector<int>& nuts, const int& n);
 
-    }
+
+
+    static void print(std::vector<int>& array);
+
+
+
+
 
 
 

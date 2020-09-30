@@ -3,4 +3,4 @@ project(Lab2_parallel_quicksort_)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Lab2_parallel_quicksort_ main.cpp)
+add_executable(Lab2_parallel_quicksort_ main.cpp Sort.h Sort.cpp)
