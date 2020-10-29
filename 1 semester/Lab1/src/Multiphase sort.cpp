@@ -2,13 +2,9 @@
 // Created by Win10Pro on 10.09.2020.
 //
 
+#include <algorithm>
 #include "Multiphase sort.h"
 
-void Multiphase::save_to_bin_file(std::ofstream &file, const int &value) {
-
-    file.write((char*)&value, sizeof(value));
-
-}
 
 void Multiphase::save_to_bin_file(std::ofstream &file, const std::vector<int> &array) {
 
@@ -79,45 +75,41 @@ std::vector<int> Multiphase::count(const int &size, const int &files_quantity, i
 
     std::vector<int> res;
     res.assign(files_quantity, 0);
-    res[files_quantity - 1] = 1;
-    int  sum = 1, min_index = 0, max_index = files_quantity - 1, new_max = 0, max_value;
-    int needed_chunks = ceil(size/(double)limit);
-    while (sum < needed_chunks){
+    res[0] = 1;
 
-        max_value = res[max_index];
+    int needed_count = ceil(size/(double)limit);
 
-        for (std::size_t i = 0; i < res.size(); i++) {
+    int max_index = 0;
+    int max_size = 1;
+    int chunk_counter = 0;
 
-            res[i] += max_value;
-            if (res[new_max] < res[i] && i != max_index) {
-                new_max = i;
+
+
+    while(chunk_counter < needed_count){
+        chunk_counter = 0;
+
+        for(int i = 0; i < res.size(); i++)
+            if (res[i] > res[max_index]) {
+                max_index = i;
+                max_size = res[i];
+
             }
 
-            sum += max_value;
+        for(int i = 0; i < res.size(); i++)
+            if (i == max_index)
+                res[i] = 0;
 
-        }
-
-        sum -= res[max_index];
-        min_index = max_index;
-        res[min_index] = 0;
-        max_index = new_max;
-        new_max = min_index;
-
-//        std::cout<<sum<<"\n";
-//        for(int& i: res){
-//            std::cout<< i << " ";
-//        }
-//        std::cout<< "\n";
+            else {
+                res[i] += max_size;
+                chunk_counter += res[i];
+            }
     }
 
-//    Sort::merge_sort(res, 0, res.size() - 1);
-//    for (int i = 0; i < res.size() / 2; ++i) {
-//
-//    }
-
-    limit = size / sum;
+    limit = size / chunk_counter;
 
     return res;
+
+
 }
 
 std::vector<int> Multiphase::save_all_to_files(const std::vector<int> &array, std::vector<std::ofstream> &files, int &limit) {
@@ -126,10 +118,9 @@ std::vector<int> Multiphase::save_all_to_files(const std::vector<int> &array, st
 
     int sum = 0;
     for(auto i: sizes){
-        std::cout<<i<<"\n";
+//        std::cout<<i<<"\n";
         sum += i;
     }
-
 
     std::vector<int> temp;
     int p = 0, j;
@@ -137,6 +128,7 @@ std::vector<int> Multiphase::save_all_to_files(const std::vector<int> &array, st
 
         j = 0;
         for(; j < sizes[i] && sum > 0; j++) {
+            temp.clear();
 
             for(int k = 0; k < limit && p < array.size(); k++){
 
@@ -148,6 +140,7 @@ std::vector<int> Multiphase::save_all_to_files(const std::vector<int> &array, st
             sum--;
 
             Sort::merge_sort(temp, 0, temp.size() - 1);
+
 //            std::sort(temp.begin(), temp.end());
 //            for(auto i: temp){
 //                std::cout<<i <<"\t";
@@ -156,269 +149,206 @@ std::vector<int> Multiphase::save_all_to_files(const std::vector<int> &array, st
 
             Multiphase::save_to_bin_file(files[i], temp);
 
-            temp.clear();
+
 
         }
         if(sum == 0){
             sizes[i] = j;
         }
 
-
     }
 
-    std::cout<<limit<<"\n";
+//    std::cout<<limit<<"\n";
     return sizes;
-
-
-
-//    for (int i = 0; i < data.countOfFiles; i++){
-//
-//        int newElement, j = 0;
-//        for (; j < countsOfChunksInEachFiles[i] && neededCountOfChunks > 0; j++){
-//            newFile.currentChunk.clear();
-//
-//            for (int k = 0; k < data.sizeOfChunk && !in.eof(); k++) {
-//                in.read((char *)&newElement, sizeof(int));
-//                newFile.currentChunk.push_back(newElement);
-//            }
-//
-//            neededCountOfChunks--;
-//            sort(newFile.currentChunk.begin(), newFile.currentChunk.end());
-//            for (auto number : newFile.currentChunk) {
-//                out.write((char *) &number, sizeof(number));
-//            }
-//        }
-//        if (neededCountOfChunks == 0)
-//            newFile.countOfChunks = j;
-//        else
-//            newFile.countOfChunks = countsOfChunksInEachFiles[i];
-//
-//        files.push_back(newFile);
-//        out.close();
-//    }
 
 }
 
 std::vector<int> Multiphase::sort(std::vector<std::ifstream> &read, std::vector<std::ofstream> &write, std::vector<int> &array,
                                   const int &limit, const int &size, std::vector<int>& chunks) {
 
-    std::vector<int> sizes (read.size()), memory;
 
-    std::vector<bool> to_ignore, local_ignore;
-    to_ignore.assign(read.size(), false);
-    local_ignore.assign(read.size(), false);
+    int out_index;
+    int min_index;
+    std::string lastFile = "res.txt", file_path, number = "a";
+
+    std::vector<bool> in_use (read.size(), false);
+
+
+    while (!check_all_merged(chunks)) {
+        for (auto && i : in_use)
+           i = false;
+
+        out_index = get_output_file(chunks);
+        min_index = get_min_file(chunks);
+
+        std::cout << "Current number of chunks in files: ";
+        for (int chunk : chunks)
+            std::cout << chunk << " ";
+        std::cout << std::endl;
+
+        int minSize = chunks[min_index];
+
+        read[out_index].close();
+        number[0] = char(out_index + 65);
+        file_path = "../src/Files/" + number + ".txt";
+        write[out_index].open(file_path, std::ios::binary);
+
+//        std::cout<<"start merging chunk" << std::endl;
+        for (int i = 0; i < chunks[min_index]; i++) {
+            merge_cur_chunk(chunks, in_use, read, write, out_index);
+//            std::cout<<i << "\n";
+//            mergeCurrentChunk(files, ifstreams, out, indexOutputFile);
+
+        }
+//        std::cout<<"chunk is merged chunk" << std::endl;
+
+        for (int & chunk : chunks)
+            if (chunk > 0)
+                chunk -= minSize;
+        chunks[out_index] += minSize;
+
+        write[out_index].close();
+        read[out_index].open(file_path, std::ios::binary);
+
+        lastFile = file_path;
+    }
+
+    for (auto & i : read)
+        i.close();
+
+    std::cout << "\nSorted array is in " << lastFile << std::endl;
+
+    return {};
+
+}
+
+void Multiphase::merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_use, std::vector<std::ifstream> &read,
+                                 std::vector<std::ofstream> &write, const int &output_index) {
+
+    for (int i = 0; i < sizes.size(); i++)
+        if (sizes[i] > 0)
+            in_use[i] = true;
+
+    int min_index = 0, temp_number = 1001;
+
+    std::vector<int> cur_numbers;
+    for (int i = 0; i < read.size(); i++) {
+
+        if (in_use[i]) {
+            read[i].read((char *)&temp_number, sizeof(int));
+            cur_numbers.push_back(temp_number);
+            if (cur_numbers[min_index] > temp_number)
+                min_index = i;
+        }else{
+            cur_numbers.push_back(1000);
+        }
+
+    }
+
+
+    write[output_index].write((char*)&cur_numbers[min_index], sizeof(int));
+
+    int pos = read[min_index].tellg();
+    read[min_index].seekg(0, std::ios::end);
+    int size = read[min_index].tellg();
+    read[min_index].seekg(pos);
+
+    clock_t start = clock();
+    while(!check_merge_cur_chunk(in_use)){
+
+        if (!in_use[min_index])
+            for (int i = 0; i < in_use.size(); i++)
+                if (in_use[i])
+                    min_index = i;
+
+        pos = read[min_index].tellg();
+
+//        read[min_index].seekg(pos);
+//        if(read[min_index].tellg() < size)
+            read[min_index].read((char *)&temp_number, sizeof(int));
+
+        if (read[min_index].tellg() == size || temp_number < cur_numbers[min_index]) {
+            in_use[min_index] = false;
+            cur_numbers[min_index] = 1000;
+            read[min_index].seekg(pos);
+        }else {
+            cur_numbers[min_index] = temp_number;
+//            if(read[min_index].tellg() == size)
+//                in_use[min_index] = false;
+
+        }
+
+
+        for (int i = 0; i < in_use.size(); i++){
+            if (in_use[i]){
+                if (cur_numbers[i] < cur_numbers[min_index])
+                    min_index = i;
+            }
+        }
+
+        if (!check_merge_cur_chunk(in_use)) {
+            write[output_index].write((char *) &cur_numbers[min_index], sizeof(cur_numbers[min_index]));
+        }
+
+    }
+    clock_t end = clock();
+
+//    std::cout<<end - start <<" ms" << std::endl;
+
+
+}
+
+int Multiphase::get_output_file(std::vector<int> &sizes) {
+
+    int res = 0;
+    bool flag = false;
+
+    for (int i = 0; i < sizes.size() && !flag; i++)
+        if (sizes[i] == 0) {
+            res = i;
+            flag = true;
+        }
+
+    return res;
+
+}
+
+int Multiphase::get_min_file(std::vector<int> &sizes) {
+
+    int min_index = 0;
+
+    while(sizes[min_index] == 0)
+        min_index++;
+
+    for (int i = 0; i < sizes.size(); i++)
+        if (sizes[i] < sizes[min_index] && sizes[i] > 0)
+            min_index = i;
+
+    return min_index;
+
+}
+
+bool Multiphase::check_all_merged(std::vector<int> &sizes) {
 
     int sum = 0;
-    for(int i : chunks){
-        sum += i;
-    }
-    std::cout<<"sum = " << sum<<"\n";
 
-    int empty_file = 0, ignore_sum = 0;
-    for(std::size_t i = 0; i < read.size(); i++){
+    for (int size : sizes)
+        sum += size;
 
-        read[i].seekg(0, std::ios::end);
-        sizes[i] = read[i].tellg();
-//        std::cout<< i << ": " << sizes[i] << std::endl;
-        if(sizes[i] == 0){
-            to_ignore[i] = true;
-            local_ignore[i] = true;
-            empty_file = i;
-            ignore_sum++;
-//            std::cout<<i << " ffdsfdsf\n";
-        }
-        read[i].seekg(0, std::ios::beg);
-
-    }
-
-//    to_ignore[empty_file] = true;
-//    local_ignore[empty_file] = true;
-
-    std::cout<< "Start of sorting" << std::endl;
-    std::string number = "a", file_path;
-    std::vector<int> cur_values(read.size());
-    int new_empty = empty_file, value, next, file_pos, bin_pos, file_number;
-    std::vector<int> limits;
-    limits.assign(read.size(), 0);
-    while(true) {
+    return sum == 1;
+}
 
 
+bool Multiphase::check_merge_cur_chunk(std::vector<bool> &in_use) {
 
-        read[empty_file].close();
-        number[0] = char(empty_file + 65);
-        file_path = "../src/Files/" + number + ".txt";
-        write[empty_file].open(file_path, std::ios::binary);
-        clock_t start = clock();
-        int chunk_counter = 0;
-        for(auto i: chunks){
-            std::cout<<i<<"\t";
-        }
-        std::cout<<"\n";
-        while (new_empty == empty_file) {
+    for (auto && i : in_use)
+        if (i)
+        return false;
 
-            for (std::size_t i = 0; i < read.size(); i++) {
-
-                if(!to_ignore[i]) {
-                    read[i].read((char *) &value, sizeof(value));
-                    memory.emplace_back(value);
-                    cur_values[i] = value;
-                    limits[i]++;
-                }
-
-            }
-
-
-            Sort::merge_sort(memory, 0, memory.size() - 1);
-            for(std::size_t j = 0; j < memory.size()/2; j++) {
-                int temp_1 = memory[j];
-                memory[j] = memory[memory.size() - 1 - j];
-                memory[memory.size() - 1 - j] = temp_1;
-            }
-
-
-            clock_t start_1 = clock();
-
-            while(!memory.empty()){
-
-                value = memory[memory.size() - 1];
-                file_number = find_file(cur_values, value, local_ignore);
-                file_pos = read[file_number].tellg();
-//                    std::cout<<value<< " " <<file_number<<" lol" <<std::endl;
-                save_to_bin_file(write[empty_file], value);
-
-//                for(auto i : memory){
-//                    std::cout << i << "\t";
-//                }
-//                std::cout<<std::endl;
-                memory.pop_back();
-
-
-
-                if(file_pos != sizes[file_number]){
-                    read[file_number].read((char *) &next, sizeof(next));
-
-                    if (next >= value && (limits[file_number] < limit || (sum == read.size() - 1)) ) {
-                        bin_pos = bin_search(next, memory);
-                        if(bin_pos == memory.size()){
-                            memory.emplace_back(next);
-                        }
-                        else{
-                        memory.insert(memory.begin() + bin_pos, next);
-                        }
-                        limits[file_number]++;
-                        cur_values[file_number] = next;
-
-                    } else{
-                        read[file_number].seekg(file_pos);
-//                        limits[file_number] = 0;
-                        local_ignore[file_number] = true;
-//                        ignore_sum++;
-
-
-                    }
-                } else{
-                    new_empty = file_number;
-                    to_ignore[new_empty] = true;
-                    local_ignore[new_empty] = true;
-
-                }
-
-
-            }
-            clock_t end_1 = clock();
-//            std::cout<<"Getting 1 chunk from all files "<<end_1 - start_1<<"ms\n";
-
-
-//                std::cout << "lol\n";
-            for(int & i : limits){
-                i = 0;
-            }
-
-
-            for(std::size_t i = 0; i < local_ignore.size(); i++){
-               local_ignore[i] = to_ignore[i];
-            }
-//                std::cin>>breakpoint;
-
-            chunk_counter++;
-        }
-        clock_t end = clock();
-        std::cout<<"File " << new_empty <<" is empty "<<end - start<<"ms\n";
-//        std::cout<<new_empty<<"\n";
-        for(std::size_t i = 0; i < chunks.size(); i++){
-            if(i == empty_file){
-                chunks[i] = chunks[new_empty];
-
-            }
-            else if(i != new_empty) {
-                chunks[i] -= chunks[new_empty];
-                sum -= chunks[new_empty];
-            }
-        }
-        chunks[new_empty] = 0;
-        std::cout<<"sum = " << sum<<"\n";
-
-
-
-        to_ignore[empty_file] = false;
-        local_ignore[empty_file] = false;
-        write[empty_file].close();
-        number[0] = char(empty_file + 65);
-        file_path = "../src/Files/" + number + ".txt";
-        read[empty_file].open(file_path, std::ios::binary);
-
-        read[empty_file].seekg(0, std::ios::end);
-        sizes[empty_file] = read[empty_file].tellg();
-        read[empty_file].seekg(0, std::ios::beg);
-
-        if(sizes[empty_file] == size * sizeof(array[0])){
-
-            std::cout<<"Everything is in one file" << std::endl;
-            break;
-
-        }
-
-        for(int i = 0; i < sizes.size(); i++){
-            std::cout<< i << ": " << sizes[i] << "\n";
-        }
-//        std::cout<<"sdfdf\n";
-        empty_file = new_empty;
-
-//        std::cin>>breakpoint;
-//        read[empty_file]. close();
-//        number[0] = char(empty_file + 48);
-//        file_path = "../src/Files/" + number + ".txt";
-//        read[empty_file].open(file_path, std::ios::trunc);
-
-
-
-    }
-
-    return load_all_file(read[empty_file]);
-
-
-//    for(auto i: res){
-//        std::cout<<i << " ";
-//    }
-
-//    if(is_sorted(res)){
-//        std::cout<<"Our array was succesfully sorted and has size = " << res.size() << "\n";
-//    }
-
+    return true;
 
 }
 
-int Multiphase::find_file(const std::vector<int> &array, const int &value, const std::vector<bool>& to_ignore) {
-
-    for(std::size_t i = 0; i < array.size(); i++){
-
-        if(array[i] == value && !to_ignore[i])
-            return i;
-
-    }
-    return -1;
-
-}
 
 bool Multiphase::is_sorted(std::vector<int> array) {
 
@@ -431,33 +361,4 @@ bool Multiphase::is_sorted(std::vector<int> array) {
 
 }
 
-int Multiphase::bin_search(int &value, std::vector<int> &array) {
 
-    if(array.empty()){
-        return 0;
-    }
-    if(array[array.size() - 1] >= value){
-        return array.size();
-    }
-    if(array.size() == 1){
-        if(array[0] < value)
-            return 0;
-        if(array[0] >= value)
-            return 1;
-    }
-    int a = 0, b = array.size() - 1;
-    int middle = 0;
-    while(a < b){
-        middle = (a + b) / 2;
-        if(array[middle] >= value) {
-            a = middle + 1;
-            middle = (a + b) / 2;
-        } else{
-            b = middle;
-//                middle = (a + b) / 2;
-        }
-
-    }
-    return middle;
-
-}

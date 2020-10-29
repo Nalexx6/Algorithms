@@ -12,15 +12,18 @@
 #include <cmath>
 class Multiphase {
 
-    static int bin_search(int& value, std::vector<int>& array);
-
-    static void save_to_bin_file(std::ofstream& file,  const int& value);
+    std::vector<int> load_all_file(std::ifstream &file);
 
     static void save_to_bin_file(std::ofstream& file,  const std::vector<int>& array);
 
-    static std::vector<int> load_all_file(std::ifstream& file);
+    static int get_min_file(std::vector<int>& sizes);
 
-    static int find_file(const std::vector<int>& array, const int& value, const std::vector<bool>& to_ignore);
+    static int get_output_file(std::vector<int>& sizes);
+
+    static bool check_merge_cur_chunk(std::vector<bool> &in_use);
+
+    static bool check_all_merged(std::vector<int>& sizes);
+
 public:
 
 
@@ -35,9 +38,16 @@ public:
     static std::vector<int> sort(std::vector<std::ifstream> &read, std::vector<std::ofstream> & write,
                      std::vector<int>& array, const int& limit, const int& size, std::vector<int>& chunks);
 
-
     static bool is_sorted(std::vector<int> array);
+
+
+    static void merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_use, std::vector<std::ifstream> &read,
+                                std::vector<std::ofstream> &write, const int& output_index);
+
+
+
 };
 
 
 #endif //LAB1_MULTIPHASE_SORT_H
+

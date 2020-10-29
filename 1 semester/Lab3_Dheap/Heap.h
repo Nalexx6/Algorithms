@@ -23,7 +23,7 @@ public:
     ~Heap();
 
     int d(){ return _d;}
-    std::vector<T> array(){ return _array;}
+    int size(){ return _array.size();}
 
     void heapify(int i){
 
