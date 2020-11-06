@@ -14,6 +14,7 @@ private:
 
 public:
 
+    Object();
     explicit Object(int key) : _key(key) {};
 
     ~Object() = default;

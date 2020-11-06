@@ -7,7 +7,7 @@
 void Diff_sorts::sort_1_2(std::vector<Object<int>> &array) {
 
     std::vector<Object<int>> res;
-    res.assign(array.size(), 0);
+    res = array;
 
     int index = 0;
 
