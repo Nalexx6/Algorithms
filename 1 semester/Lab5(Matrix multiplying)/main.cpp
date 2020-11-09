@@ -2,6 +2,8 @@
 #include <ctime>
 #include <random>
 
+const int cutoff = 64;
+
 int rand(int lo, int hi) {
 
     static std::random_device rd;
@@ -106,6 +108,12 @@ void sub_matrix(const int& power, const int* A, const int* B, int* R){
 
 void strassen(int power, int* A, int* B, int* R){
 
+    if (power <= cutoff) {
+
+        return multiply(A, B, power, R);
+
+    }
+
     int* A11 = new int [power * power / 4];
     int* A12 = new int [power * power / 4];
     int* A21 = new int [power * power / 4];
@@ -133,85 +141,80 @@ void strassen(int power, int* A, int* B, int* R){
     int* BB = new int [power * power / 4];
 
 
-    if (power == 2) {
 
-        return multiply(A, B, power, R);
 
-    }
-    else {
+    //initialization of auxiliary matrices
+    for (int i = 0; i < power / 2; i++) {
+        for (int j = 0; j < power / 2; j++) {
+            A11[power * i / 2 + j] = A[power * i + j];
+            A12[power * i / 2 + j] = A[power * i + j + power / 2];
+            A21[power * i / 2 + j] = A[power * (i + power / 2) + j];
+            A22[power * i / 2 + j] = A[power * (i + power / 2) + j + power / 2];
 
-        //initialization of auxiliary matrices
-        for (int i = 0; i < power / 2; i++) {
-            for (int j = 0; j < power / 2; j++) {
-                A11[power * i / 2 + j] = A[power * i + j];
-                A12[power * i / 2 + j] = A[power * i + j + power / 2];
-                A21[power * i / 2 + j] = A[power * (i + power / 2) + j];
-                A22[power * i / 2 + j] = A[power * (i + power / 2) + j + power / 2];
-
-                B11[power * i / 2 + j] = B[power * i + j];
-                B12[power * i / 2 + j] = B[power * i + j + power / 2];
-                B21[power * i / 2 + j] = B[power * (i + power / 2) + j];
-                B22[power * i / 2 + j] = B[power * (i + power / 2) + j + power / 2];
-            }
-        }
-
-        //calculating M1 = (A11 + A22) × (B11 + B22)
-        add_matrix(power / 2, A11, A22, AA);
-        add_matrix(power / 2, B11, B22, BB);
-        strassen(power / 2, AA, BB, M1);
-
-        //calculating M2 = (A21 + A22) × B11
-        add_matrix(power / 2, A21, A22, AA);
-        strassen(power / 2, AA, B11, M2);
-
-        //calculating M3 = A11 × (B12 - B22)
-        sub_matrix(power / 2, B12, B22, BB);
-        strassen(power / 2, A11, BB, M3);
-
-        //calculating M4 = A22 × (B21 - B11)
-        sub_matrix(power / 2, B21, B11, BB);
-        strassen(power / 2, A22, BB, M4);
-
-        //calculating M5 = (A11 + A12) × B22
-        add_matrix(power / 2, A11, A12, AA);
-        strassen(power / 2, AA, B22, M5);
-
-        //calculating M6 = (A21 - A11) × (B11 + B12)
-        sub_matrix(power / 2, A21, A11, AA);
-        add_matrix(power / 2, B11, B12, BB);
-        strassen(power / 2, AA, BB, M6);
-
-        //calculating M7 = (A12 - A22) × (B21 + B22)
-        sub_matrix(power / 2, A12, A22, AA);
-        add_matrix(power / 2, B21, B22, BB);
-        strassen(power / 2, AA, BB, M7);
-
-        //calculating C11 = M1 + M4 - M5 + M7
-        add_matrix(power / 2, M1, M4, AA);
-        sub_matrix(power / 2, M7, M5, BB);
-        add_matrix(power / 2, AA, BB, R11);
-
-        //calculating C12 = M3 + M5
-        add_matrix(power / 2, M3, M5, R12);
-
-        //calculating C21 = M2 + M4
-        add_matrix(power / 2, M2, M4, R21);
-
-        //calculating C22 = M1 - M2 + M3 + M6
-        sub_matrix(power / 2, M1, M2, AA);
-        add_matrix(power / 2, M3, M6, BB);
-        add_matrix(power / 2, AA, BB, R22);
-
-        //merge all results to R
-        for (int i = 0; i < power / 2; i++) {
-            for (int j = 0; j < power / 2; j++) {
-                R[power * i + j] = R11[power * i / 2 + j];
-                R[power * i + j + power / 2] = R12[power * i / 2 + j];
-                R[power * (i + power / 2) + j] = R21[power * i / 2 + j];
-                R[power * (i + power / 2) + j + power / 2] = R22[power * i / 2 + j];
-            }
+            B11[power * i / 2 + j] = B[power * i + j];
+            B12[power * i / 2 + j] = B[power * i + j + power / 2];
+            B21[power * i / 2 + j] = B[power * (i + power / 2) + j];
+            B22[power * i / 2 + j] = B[power * (i + power / 2) + j + power / 2];
         }
     }
+
+    //calculating M1 = (A11 + A22) × (B11 + B22)
+    add_matrix(power / 2, A11, A22, AA);
+    add_matrix(power / 2, B11, B22, BB);
+    strassen(power / 2, AA, BB, M1);
+
+    //calculating M2 = (A21 + A22) × B11
+    add_matrix(power / 2, A21, A22, AA);
+    strassen(power / 2, AA, B11, M2);
+
+    //calculating M3 = A11 × (B12 - B22)
+    sub_matrix(power / 2, B12, B22, BB);
+    strassen(power / 2, A11, BB, M3);
+
+    //calculating M4 = A22 × (B21 - B11)
+    sub_matrix(power / 2, B21, B11, BB);
+    strassen(power / 2, A22, BB, M4);
+
+    //calculating M5 = (A11 + A12) × B22
+    add_matrix(power / 2, A11, A12, AA);
+    strassen(power / 2, AA, B22, M5);
+
+    //calculating M6 = (A21 - A11) × (B11 + B12)
+    sub_matrix(power / 2, A21, A11, AA);
+    add_matrix(power / 2, B11, B12, BB);
+    strassen(power / 2, AA, BB, M6);
+
+    //calculating M7 = (A12 - A22) × (B21 + B22)
+    sub_matrix(power / 2, A12, A22, AA);
+    add_matrix(power / 2, B21, B22, BB);
+    strassen(power / 2, AA, BB, M7);
+
+    //calculating C11 = M1 + M4 - M5 + M7
+    add_matrix(power / 2, M1, M4, AA);
+    sub_matrix(power / 2, M7, M5, BB);
+    add_matrix(power / 2, AA, BB, R11);
+
+    //calculating C12 = M3 + M5
+    add_matrix(power / 2, M3, M5, R12);
+
+    //calculating C21 = M2 + M4
+    add_matrix(power / 2, M2, M4, R21);
+
+    //calculating C22 = M1 - M2 + M3 + M6
+    sub_matrix(power / 2, M1, M2, AA);
+    add_matrix(power / 2, M3, M6, BB);
+    add_matrix(power / 2, AA, BB, R22);
+
+    //merge all results to R
+    for (int i = 0; i < power / 2; i++) {
+        for (int j = 0; j < power / 2; j++) {
+            R[power * i + j] = R11[power * i / 2 + j];
+            R[power * i + j + power / 2] = R12[power * i / 2 + j];
+            R[power * (i + power / 2) + j] = R21[power * i / 2 + j];
+            R[power * (i + power / 2) + j + power / 2] = R22[power * i / 2 + j];
+        }
+    }
+
 
     delete [] A11, delete [] A12, delete [] A21, delete [] A22;
     delete [] B11, delete [] B12, delete [] B21, delete [] B22;
