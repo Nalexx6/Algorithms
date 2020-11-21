@@ -41,7 +41,7 @@ public:
     static bool is_sorted(std::vector<int> array);
 
 
-    static void merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_use, std::vector<std::ifstream> &read,
+    static int merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_use, std::vector<std::ifstream> &read,
                                 std::vector<std::ofstream> &write, const int& output_index);
 
 

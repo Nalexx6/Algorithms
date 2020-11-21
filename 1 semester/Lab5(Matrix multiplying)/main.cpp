@@ -318,11 +318,11 @@ int main() {
 //    print(B, power);
 //    std::cout << "\n";
 
-
+    int* res = new int [power * power];
     std::cout << "Classic multiplying started...\n";
 
     clock_t start = clock();
-    int* res = new int [power * power];
+
     multiply(A, B, power, res);
     clock_t end = clock();
 
@@ -331,9 +331,10 @@ int main() {
 
     std::cout<<"Classic multiplying was done in " << end - start << "ms\n\n";
 
+    int* res1 = new int [power * power];
+
     std::cout << "Strassen multiplying started...\n";
     start = clock();
-    int* res1 = new int [power * power];
     strassen_multiply(A, B, power, res1);
     end = clock();
 

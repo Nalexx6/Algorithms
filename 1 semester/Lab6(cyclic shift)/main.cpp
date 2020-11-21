@@ -12,6 +12,7 @@ std::vector<int> prefix(const std::string& a){
     for(int i = 1; i < a.length(); i++){
 
         k = result[i - 1];
+        std::cout <<k <<"\n";
 
         while (true) {
             if (a[i] == a[k]) {
@@ -32,6 +33,7 @@ std::vector<int> prefix(const std::string& a){
 
             }
 
+            std::cout << "fdsf\n";
         }
 
     }
@@ -44,8 +46,9 @@ int check_shift(std::string& a, std::string& b){
 
     std::vector<int> prefixes = prefix(a);
 
-//    for(auto i: prefixes)
-//        std::cout<<i<<" ";
+    for(auto i: prefixes)
+        std::cout<<i<<" ";
+    std::cout<<"\n";
 
     std::string b_copy = b + b;
     int q = 0;

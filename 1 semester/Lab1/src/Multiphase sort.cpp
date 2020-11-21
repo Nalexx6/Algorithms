@@ -29,8 +29,6 @@ std::vector<std::ofstream> Multiphase::create_files(const int &file_quantity) {
         files[i].close();
         files[i].open (file_path, std::ios::binary);
 
-
-
     }
 
     return files;
@@ -118,7 +116,7 @@ std::vector<int> Multiphase::save_all_to_files(const std::vector<int> &array, st
 
     int sum = 0;
     for(auto i: sizes){
-//        std::cout<<i<<"\n";
+        std::cout<<i<<"\n";
         sum += i;
     }
 
@@ -191,20 +189,26 @@ std::vector<int> Multiphase::sort(std::vector<std::ifstream> &read, std::vector<
         read[out_index].close();
         number[0] = char(out_index + 65);
         file_path = "../src/Files/" + number + ".txt";
+//        write[out_index].open(file_path, std::ios::binary);
+//        write[out_index].close();
+//        read[out_index].open(file_path, std::ios::trunc);
+//        read[out_index].close();
         write[out_index].open(file_path, std::ios::binary);
 
+
 //        std::cout<<"start merging chunk" << std::endl;
+        int quantity = 0;
         for (int i = 0; i < chunks[min_index]; i++) {
-            merge_cur_chunk(chunks, in_use, read, write, out_index);
+            quantity += merge_cur_chunk(chunks, in_use, read, write, out_index);
 //            std::cout<<i << "\n";
-//            mergeCurrentChunk(files, ifstreams, out, indexOutputFile);
 
         }
-//        std::cout<<"chunk is merged chunk" << std::endl;
+        std::cout<<"chunk is merged , elements processed = " << quantity << std::endl;
 
-        for (int & chunk : chunks)
-            if (chunk > 0)
-                chunk -= minSize;
+        for (int i = 0; i < chunks.size(); i++) {
+            if (chunks[i] > 0)
+                chunks[i] -= minSize;
+        }
         chunks[out_index] += minSize;
 
         write[out_index].close();
@@ -222,23 +226,26 @@ std::vector<int> Multiphase::sort(std::vector<std::ifstream> &read, std::vector<
 
 }
 
-void Multiphase::merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_use, std::vector<std::ifstream> &read,
+int Multiphase::merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_use, std::vector<std::ifstream> &read,
                                  std::vector<std::ofstream> &write, const int &output_index) {
 
+    int quantity = 0;
     for (int i = 0; i < sizes.size(); i++)
-        if (sizes[i] > 0)
+        if (sizes[i] > 0) {
             in_use[i] = true;
+//            std::cout<<i<< " in_use\n";
+        }
 
     int min_index = 0, temp_number = 1001;
 
     std::vector<int> cur_numbers;
     for (int i = 0; i < read.size(); i++) {
-
         if (in_use[i]) {
             read[i].read((char *)&temp_number, sizeof(int));
             cur_numbers.push_back(temp_number);
             if (cur_numbers[min_index] > temp_number)
                 min_index = i;
+            quantity++;
         }else{
             cur_numbers.push_back(1000);
         }
@@ -254,6 +261,7 @@ void Multiphase::merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_
     read[min_index].seekg(pos);
 
     clock_t start = clock();
+    std::cout<<"start merging current chunks " << quantity << std::endl;
     while(!check_merge_cur_chunk(in_use)){
 
         if (!in_use[min_index])
@@ -262,21 +270,30 @@ void Multiphase::merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_
                     min_index = i;
 
         pos = read[min_index].tellg();
+        read[min_index].seekg(0, std::ios::end);
+        size = read[min_index].tellg();
+        read[min_index].seekg(pos);
 
 //        read[min_index].seekg(pos);
-//        if(read[min_index].tellg() < size)
-            read[min_index].read((char *)&temp_number, sizeof(int));
+        if(read[min_index].tellg() < size) {
+            read[min_index].read((char *) &temp_number, sizeof(int));
 
-        if (read[min_index].tellg() == size || temp_number < cur_numbers[min_index]) {
+            if (temp_number < cur_numbers[min_index]) {
+                in_use[min_index] = false;
+                cur_numbers[min_index] = 1000;
+                read[min_index].seekg(pos);
+            }else {
+                cur_numbers[min_index] = temp_number;
+            }
+        }
+        else{
+
             in_use[min_index] = false;
-            cur_numbers[min_index] = 1000;
-            read[min_index].seekg(pos);
-        }else {
-            cur_numbers[min_index] = temp_number;
-//            if(read[min_index].tellg() == size)
-//                in_use[min_index] = false;
 
         }
+
+        quantity++;
+
 
 
         for (int i = 0; i < in_use.size(); i++){
@@ -291,10 +308,11 @@ void Multiphase::merge_cur_chunk(std::vector<int> &sizes, std::vector<bool>& in_
         }
 
     }
+    std::cout<<"ended merging current chunks\n" << "elements processed = " << quantity << std::endl;
     clock_t end = clock();
 
 //    std::cout<<end - start <<" ms" << std::endl;
-
+    return quantity;
 
 }
 
