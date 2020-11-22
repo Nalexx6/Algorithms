@@ -3,4 +3,4 @@ project(Lab8_diff_algos_)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Lab8_diff_algos_ main.cpp Algoritms/KMP.h)
+add_executable(Lab8_diff_algos_ main.cpp Algoritms/KMP.h Algoritms/Horspul.h Algoritms/Rabin-karp.h Algoritms/Boyer-Moor.h)
