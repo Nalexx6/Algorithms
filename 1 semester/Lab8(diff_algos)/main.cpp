@@ -28,7 +28,10 @@ int main() {
 
     std::string pattern = "abc", text = "sdfdfsdabcbbdddsc";
 
-    int shift = kmp(pattern, text);
+//    int shift = kmp(pattern, text);
+    int shift = horspul(text, pattern);
+
+
 
     if(shift != -1)
         std::cout << "Pattern was found in text, shift is: " << shift << " symbols\n";
