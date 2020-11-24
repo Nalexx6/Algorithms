@@ -29,7 +29,7 @@ int main() {
     std::string pattern = "abc", text = "sdfdfsdabcbbdddsc";
 
 //    int shift = kmp(pattern, text);
-    int shift = horspul(text, pattern);
+    int shift = boyer_moor(text, pattern);
 
 
 
