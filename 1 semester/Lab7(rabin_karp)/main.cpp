@@ -3,7 +3,7 @@
 #include <vector>
 #include <cmath>
 
-const int q = 31;//main simple integer for algorithm
+const int q = 997;//main simple integer for algorithm
 const int size = 100;//approximate quantity of possible symbols(95 if not round)
 int h;
 
