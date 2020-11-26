@@ -49,7 +49,7 @@ std::vector<int> prefix(const std::string& a){
 
 }
 
-int kmp(std::string& a, std::string& b){
+int kmp(std::string& b, std::string& a){
 
     std::vector<int> prefixes = prefix(a);
 

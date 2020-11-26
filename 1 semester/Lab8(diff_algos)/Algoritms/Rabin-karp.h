@@ -19,7 +19,7 @@ int hash(const std::string& a){
     int res = 0;
     for(int i = 0; i < a.size(); i++){
 
-        res = (res * size + a[i]) % q;
+        res = (res * size + int(a[i])) % q;
 
     }
 
@@ -57,23 +57,24 @@ int rabin_karp(const std::string& text, const std::string& pattern){
 
     std::string temp;
 
+    for(int j = 0; j < pattern.size(); j++){
+
+        temp+= text[j];
+
+    }
+
+    htext = hash(temp);
+    temp = "";
+
     for(int i = 0; i < text.size() - pattern.size() + 1; i++){
 
-        for(int j = i; j < pattern.size(); j++){
-
-            temp+= text[j];
-
-        }
-
-        htext = hash(temp);
-        temp = "";
-        std::cout << htext << "\n";
+//        std::cout << htext << "\n";
 
         if(check(text, pattern, hpattern, htext, i))
             return i;
         else{
-            htext = ((htext + text[i] * (q - h % q)) * size + text[i + pattern.size()]) % q;
-            std::cout << htext << "\n";
+            htext = ((htext + int(text[i]) * (q - h % q)) * size + int(text[i + pattern.size()])) % q;
+//            std::cout << htext << "\n";
         }
 
     }

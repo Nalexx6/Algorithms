@@ -25,19 +25,19 @@ int horspul(const std::string& text, const std::string& pattern){
 
     }
 
-    for(auto& i: shifts){
-
-        std::cout << i.first << " ";
-
-    }
-    std::cout << "\n";
-
-    for(auto& i: shifts){
-
-        std::cout << i.second << " ";
-
-    }
-    std::cout << "\n";
+//    for(auto& i: shifts){
+//
+//        std::cout << i.first << " ";
+//
+//    }
+//    std::cout << "\n";
+//
+//    for(auto& i: shifts){
+//
+//        std::cout << i.second << " ";
+//
+//    }
+//    std::cout << "\n";
 
     int i = pattern.size() - 1, k;
 

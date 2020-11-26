@@ -1,4 +1,6 @@
 #include <iostream>
+#include <ctime>
+
 #include "Algoritms/KMP.h"
 #include "Algoritms/Rabin-karp.h"
 #include "Algoritms/Horspul.h"
@@ -26,14 +28,43 @@ int naive(const std::string& text, const std::string& pattern) {
 
 int main() {
 
-    std::string pattern = "abc", text = "sdfdfsdabcbbdddsc";
+    std::string pattern = "hello", text = "hell sad yollo simultaneously coincidence hello world";
 
-//    int shift = kmp(pattern, text);
-    int shift = boyer_moor(text, pattern);
-
-
-
+    std::cout << "Naive\n";
+    clock_t start = clock();
+    int shift = naive(text, pattern);
+    clock_t end = clock();
     if(shift != -1)
-        std::cout << "Pattern was found in text, shift is: " << shift << " symbols\n";
+        std::cout << "Pattern was found in text, shift is: " << shift << " symbols\n"
+                                                                         "time is: " << end - start << "ms\n";
+    std::cout << "Horspul\n";
+    start = clock();
+    shift = horspul(text, pattern);
+    end = clock();
+    if(shift != -1)
+        std::cout << "Pattern was found in text, shift is: " << shift << " symbols\n"
+                                                                         "time is: " << end - start << "ms\n";
+
+    std::cout << "Boyer-Moor\n";
+    start = clock();
+    shift = boyer_moor(text, pattern);
+    end = clock();
+    if(shift != -1)
+        std::cout << "Pattern was found in text, shift is: " << shift << " symbols\n"
+                                                                         "time is: " << end - start << "ms\n";
+    std::cout << "KMP\n";
+    start = clock();
+    shift = kmp(text, pattern);
+    end = clock();
+    if(shift != -1)
+        std::cout << "Pattern was found in text, shift is: " << shift << " symbols\n"
+                                                                         "time is: " << end - start << "ms\n";
+    std::cout << "Rabin-Karp\n";
+    start = clock();
+    shift = rabin_karp(text, pattern);
+    end = clock();
+    if(shift != -1)
+        std::cout << "Pattern was found in text, shift is: " << shift << " symbols\n"
+                        "time is: " << end - start << "ms\n";
 
 }

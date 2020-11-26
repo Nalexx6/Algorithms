@@ -64,18 +64,18 @@ int boyer_moor(const std::string& text, const std::string& pattern){
         shifts[pattern[i]] = pattern.size() - i - 1;
 
     }
-    for(auto& i: shifts){
-
-        std::cout << i.first << " ";
-
-    }
-    std::cout << "\n";
-    for(auto& i: shifts){
-
-        std::cout << i.second << " ";
-
-    }
-    std::cout << "\n";
+//    for(auto& i: shifts){
+//
+//        std::cout << i.first << " ";
+//
+//    }
+//    std::cout << "\n";
+//    for(auto& i: shifts){
+//
+//        std::cout << i.second << " ";
+//
+//    }
+//    std::cout << "\n";
 
 //    int most_pref = bprefix(pattern);//length of most substring which is prefix and suffix of pattern simultaneously
 
