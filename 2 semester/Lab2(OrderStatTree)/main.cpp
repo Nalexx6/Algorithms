@@ -12,9 +12,10 @@ int main() {
 
        tree->insert(ar[i]);
 
+
    }
 
-   std::cout<< tree->size << "\n";
-   tree->print();
+    std::cout << "size = "<< tree->size << "\n";
+    tree->print();
 
 }

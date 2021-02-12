@@ -34,17 +34,19 @@ private:
 
     Node* root;
 
-    void fixCase1(Node* toFix){
+    void insertCase1(Node* toFix){
 
+//        std::cout<<"fixCase1\n";
         if(toFix->parent == nullptr)
             this->root->isBlack = true;
         else if(!toFix->parent->isBlack)
-            fixCase2(toFix);
+            insertCase2(toFix);
 
     }
 
-    void fixCase2(Node* toFix){
+    void insertCase2(Node* toFix){
 
+//        std::cout<<"fixCase2\n";
         Node* uncle;
         Node* gran = toFix->parent->parent;
         if(gran == nullptr)
@@ -58,14 +60,15 @@ private:
             toFix->parent->isBlack = true;
             uncle->isBlack = true;
             gran->isBlack = false;
-            fixCase1(gran);
+            insertCase1(gran);
         } else
-            fixCase3(toFix);
+            insertCase3(toFix);
 
     }
 
-    void fixCase3(Node* toFix){
+    void insertCase3(Node* toFix){
 
+//        std::cout<<"fixCase3\n";
         Node* gran = toFix->parent->parent;
         if(toFix == toFix->parent->right && toFix->parent == gran->left){
 
@@ -89,11 +92,12 @@ private:
 
         }
 
-        fixCase4(toFix);
+        insertCase4(toFix);
     }
 
-    void fixCase4(Node* toFix){
+    void insertCase4(Node* toFix){
 
+//        std::cout<<"fixCase4\n";
         Node* gran = toFix->parent->parent;
 
         toFix->parent->isBlack = true;
@@ -105,17 +109,24 @@ private:
             leftRotate(gran);
 
     }
+
     void leftRotate(Node* toRotate){
+
+        std::cout<<"leftRotate\n";
 
         Node* pivot = toRotate->right;
 
         pivot->parent = toRotate->parent;
-        if(toRotate->parent != nullptr)
-            if (toRotate->parent->left == toRotate)
-                toRotate->parent->left = pivot;
-            else
-                toRotate->parent->right = pivot;
 
+        if(toRotate->parent != nullptr) {
+            if (toRotate->parent->left == toRotate) {
+                toRotate->parent->left = pivot;
+            } else {
+                toRotate->parent->right = pivot;
+            }
+        }
+        else
+            this->root = pivot;
 
         toRotate->right = pivot->left;
         if(pivot->left != nullptr)
@@ -127,6 +138,7 @@ private:
     }
     void rightRotate(Node* toRotate){
 
+        std::cout<<"rightRotate\n";
         Node* pivot = toRotate->left;
 
         pivot->parent = toRotate->parent;
@@ -135,9 +147,10 @@ private:
                 toRotate->parent->left = pivot;
             else
                 toRotate->parent->right = pivot;
+        else
+            this->root = pivot;
 
-
-        toRotate->right = pivot->right;
+        toRotate->left = pivot->right;
         if(pivot->right!= nullptr)
             pivot->right->parent = toRotate;
 
@@ -183,7 +196,7 @@ public:
         else
             futureParent->right = toInsert;
 
-        fixCase1(toInsert);
+        insertCase1(toInsert);
         size++;
     }
 
@@ -201,10 +214,23 @@ public:
 
         print(node->right);
 
-        if(node == this->root)
-            std::cout << node->value << " " << node->isBlack << "\n";
-        else
-            std::cout << node->value << " " << node->isBlack << " " << node->parent->value << "\n";
+        if(node == this->root) {
+            std::cout << node->value << " ";
+            if(node->isBlack)
+                std::cout<< "Black\n";
+            else
+                std::cout<< "Red\n";
+        }
+        else {
+            std::cout << node->value << " ";
+
+            if (node->isBlack)
+                std::cout << "Black ";
+            else
+                std::cout << "Red ";
+
+            std::cout << node->parent->value << "\n";
+        }
 
     }
 
