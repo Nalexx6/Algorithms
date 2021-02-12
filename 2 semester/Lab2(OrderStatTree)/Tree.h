@@ -18,21 +18,28 @@ private:
         Node* parent;
         Node* left;
         Node* right;
-//        bool isLeftSon;
         bool isBlack;
+        int size;
 
 
         explicit Node(T& value){
             this->value = value;
             left = right = parent = nullptr;
             isBlack = false;
-//            isLeftSon = true;
+            size = 1;
         }
 
         ~Node() = default;
     };
 
     Node* root;
+
+    int getSize(Node* node){
+        if(node == nullptr)
+            return 0;
+
+        return node->size;
+    }
 
     void insertCase1(Node* toFix){
 
@@ -135,6 +142,10 @@ private:
         toRotate->parent = pivot;
         pivot->left = toRotate;
 
+        pivot->size = getSize(toRotate);
+        toRotate->size = getSize(toRotate->left) + getSize(toRotate->right) + 1;
+
+
     }
     void rightRotate(Node* toRotate){
 
@@ -157,16 +168,19 @@ private:
         toRotate->parent = pivot;
         pivot->right = toRotate;
 
+        pivot->size = getSize(toRotate);
+        toRotate->size = getSize(toRotate->left) + getSize(toRotate->right) + 1;
+
     }
 
 public:
 
-    int size;
+//    int size;
 
     Tree(){
 
         this->root = nullptr;
-        size = 0;
+//        size = 0;
 
     }
 
@@ -179,6 +193,7 @@ public:
         while (temp != nullptr){
 
             futureParent = temp;
+            temp->size++;
 
             if(toInsert->value < temp->value)
                 temp = temp->left;
@@ -197,7 +212,28 @@ public:
             futureParent->right = toInsert;
 
         insertCase1(toInsert);
-        size++;
+    }
+
+    void erase(T& t){
+
+        erase(root, t);
+
+    }
+    void erase(Node* node, T& t) {
+        if (node == nullptr) {
+            return;
+        }
+        if (t < node->value)
+            erase(node->left, t);
+        else if (t > node->value)
+            erase(node->right, t);
+        else
+            deleteNode(node);
+
+    }
+
+    void deleteNode(Node* toDelete){
+
     }
 
     void print(){
@@ -215,24 +251,25 @@ public:
         print(node->right);
 
         if(node == this->root) {
-            std::cout << node->value << " ";
+            std::cout << node->value << " size = " << node->size;
             if(node->isBlack)
-                std::cout<< "Black\n";
+                std::cout<< " Black\n";
             else
-                std::cout<< "Red\n";
+                std::cout<< " Red\n";
         }
         else {
-            std::cout << node->value << " ";
+            std::cout << node->value << " size = " << node->size;
 
             if (node->isBlack)
-                std::cout << "Black ";
+                std::cout << " Black ";
             else
-                std::cout << "Red ";
+                std::cout << " Red ";
 
-            std::cout << node->parent->value << "\n";
+            std::cout << "parent " <<  node->parent->value << "\n";
         }
 
     }
+
 
 
 };

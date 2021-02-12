@@ -15,7 +15,7 @@ int main() {
 
    }
 
-    std::cout << "size = "<< tree->size << "\n";
+//    std::cout << "size = "<< tree->size << "\n";
     tree->print();
 
 }
