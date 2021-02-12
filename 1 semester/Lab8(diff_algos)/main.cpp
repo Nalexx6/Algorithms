@@ -28,7 +28,7 @@ int naive(const std::string& text, const std::string& pattern) {
 
 int main() {
 
-    std::string pattern = "hello", text = "hell sad yollo simultaneously coincidence hello world";
+    std::string pattern = "hello", text = "hell sadd yollo simultaneously coincidence hello world";
 
     std::cout << "Naive\n";
     clock_t start = clock();

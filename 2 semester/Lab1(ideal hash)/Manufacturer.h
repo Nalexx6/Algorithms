@@ -5,8 +5,9 @@
 #ifndef LAB1_IDEAL_HASH__MANUFACTURER_H
 #define LAB1_IDEAL_HASH__MANUFACTURER_H
 
-#include "Model.h"
-#include <vector>
+#include <iostream>
+#include <string>
+
 
 class Manufacturer {
 
@@ -14,7 +15,7 @@ private:
 
     int key;
     std::string name;
-    std::vector<Model> models;
+    std::string model;
 
 public:
 
@@ -22,17 +23,20 @@ public:
         this->key = -1;
     }
 
-    Manufacturer(int& key, std::string& name){
+    Manufacturer(std::string& name, std::string& model){
 
-        this->key = key;
+        this->key = 0;
         this->name = name;
+        this->model = model;
 
     }
     ~Manufacturer() = default;
 
+
+    void setKey(const int& key) { this->key = key;}
     int getKey() {return this->key;}
     std::string getName() {return this->name;}
-    std::vector<Model> getModels() {return this->models;}
+    std::string getModel() {return this->model;}
 
 };
 

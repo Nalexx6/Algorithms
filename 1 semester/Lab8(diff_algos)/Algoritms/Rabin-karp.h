@@ -64,7 +64,6 @@ int rabin_karp(const std::string& text, const std::string& pattern){
     }
 
     htext = hash(temp);
-    temp = "";
 
     for(int i = 0; i < text.size() - pattern.size() + 1; i++){
 

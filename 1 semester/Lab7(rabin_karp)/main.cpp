@@ -8,7 +8,6 @@ const int size = 100;//approximate quantity of possible symbols(95 if not round)
 int h;
 
 
-
 int hash(std::string& a){
 
     int res = 0;
@@ -77,10 +76,10 @@ std::pair<int, int> rabin_karp(std::vector<std::string>& text, std::vector<std::
 
             htext.emplace_back(hash(temp));
             temp = "";
-            std::cout << htext[k - i] << "\n";
+//            std::cout << htext[k - i] << "\n";
 
         }
-        std::cout << "lala\n";
+//        std::cout << "lala\n";
 
 
         for(int j = 0; j < text.size() - pattern.size() + 1; j++){
@@ -93,11 +92,11 @@ std::pair<int, int> rabin_karp(std::vector<std::string>& text, std::vector<std::
                 for(int k = 0; k < htext.size(); k++){
 
                     htext[k] = ((htext[k] + text[i + k][j] * (q - h % q)) * size + text[i + k][j + pattern.size()]) % q;
-                    std::cout << htext[k] << "\n";
+//                    std::cout << htext[k] << "\n";
 
 
                 }
-                std::cout << "lol\n";
+//                std::cout << "lol\n";
 
 
             }

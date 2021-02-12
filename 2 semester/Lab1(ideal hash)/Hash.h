@@ -6,10 +6,10 @@
 #define LAB1_IDEAL_HASH__HASH_H
 
 #include "Manufacturer.h"
+#include <vector>
 
-//template <typename T>
-
-namespace gp{//general parameters for hash
+//general parameters for hash
+namespace gp{
 
     int prime = 101;
 
@@ -88,14 +88,14 @@ private:
 
     }
 
-    int hParam(const int& key, int& a, int& b, const int& size){
+    int hParam(const int& key, int& a, int& b, const int& size) const {
 
         return ((a * key + b) % gp::prime) % size;
 
 
     }
 
-    bool collisionCheck(const std::vector<int>& positions){
+    bool collisionCheck(const std::vector<int>& positions) const {
 
         std::vector<bool> array (gp::prime, false);
 
@@ -126,8 +126,9 @@ public:
 
         for(auto& i: input){
 
+            i.setKey(codeModel(i.getModel()));
             position = h(i.getKey());
-            std::cout << position << " ";
+//            std::cout << position << " ";
             data[position].first.emplace_back(i);
 
         }
@@ -142,8 +143,24 @@ public:
 
     }
 
-    Manufacturer get(const int& key){
 
+    int codeModel(const std::string& model){
+
+        int key = 0;
+        int powCounter = gp::a;
+        for(int i = 0; i < model.size(); i++){
+
+            key = (key + (int(model[i]) * powCounter)) % gp::prime;
+            powCounter = (powCounter * gp::a) % gp::prime ;
+
+        }
+
+        return key % gp::prime;
+    }
+
+    Manufacturer get(std::string& model){
+
+        int key = codeModel(model);
         std::pair<std::vector<Manufacturer>, Params>& cell = data[h(key)];
         return cell.first[hParam(key, cell.second.a, cell.second.b, cell.first.size())];
 
@@ -157,7 +174,7 @@ public:
 
             for(auto& j : i.first){
 
-                std::cout << j.getKey() << " " << j.getName() << " ";
+                std::cout << j.getKey() << " " << j.getName() << " " << j.getModel() << " ";
 
             }
 
