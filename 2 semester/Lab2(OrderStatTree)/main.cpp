@@ -11,11 +11,24 @@ int main() {
    for(int i = 0; i < 10; i++){
 
        tree->insert(ar[i]);
+       std::cout << "------------insert---------\n";
+       tree->print();
 
 
    }
 
-//    std::cout << "size = "<< tree->size << "\n";
+    std::cout << "-------------------deleting------------\n";
+
+    tree->erase(6);
     tree->print();
 
+    std::cout << "-------------------deleting------------\n";
+
+    tree->erase(4);
+    tree->print();
+
+    std::cout << "-------------------deleting------------\n";
+
+    tree->erase(9);
+    tree->print();
 }
