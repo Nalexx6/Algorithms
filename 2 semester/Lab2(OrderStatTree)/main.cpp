@@ -17,18 +17,32 @@ int main() {
 
    }
 
-    std::cout << "-------------------deleting------------\n";
+   std::cout<<tree->getStat(10);
 
-    tree->erase(6);
-    tree->print();
+//   for(int i = 0; i < 10; i++){
+//
+//       std::cout << "-------------------deleting------------\n";
+//
+//       tree->erase(i);
+//       tree->print();
+////       tree->print();
+//
+//   }
 
-    std::cout << "-------------------deleting------------\n";
 
-    tree->erase(4);
-    tree->print();
 
-    std::cout << "-------------------deleting------------\n";
-
-    tree->erase(9);
-    tree->print();
+//    std::cout << "-------------------deleting------------\n";
+//
+//    tree->erase(4);
+//    tree->print();
+//
+//    std::cout << "-------------------deleting------------\n";
+//
+//    tree->erase(9);
+//
+//
+//    std::cout << "-------------------deleting------------\n";
+//
+//    tree->erase(1);
+//    tree->print();
 }

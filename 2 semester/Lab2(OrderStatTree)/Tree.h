@@ -178,6 +178,24 @@ private:
 
     }
 
+    void erase(Node* node, const T& t) {
+        if (node == nullptr) {
+            return;
+        }
+
+        node->size--;
+
+        if (t < node->value) {
+            erase(node->left, t);
+
+        }
+        else if (t > node->value) {
+            erase(node->right, t);
+        }
+        else
+            deleteNode(node);
+
+    }
 
     void deleteNode(Node* toDelete){
         if(toDelete->right == nullptr && toDelete->left == nullptr){
@@ -339,16 +357,16 @@ private:
                 rightGreatGrandson = new Node();
 
 
-            if(leftGreatGrandson->isBlack && rightGreatGrandson->isBlack){
-                std::cout<<"fixCase3\n";
-                brother->isBlack = true;
-                rightGrandson->isBlack = false;
-                rightRotate(toFix);
 
-            }
             if(sideRight) {
-                if (!leftGreatGrandson->isBlack) {
-                    std::cout << "fixCas4\n";
+                if(leftGreatGrandson->isBlack && rightGreatGrandson->isBlack){
+                    std::cout<<"fixCase3\n";
+                    brother->isBlack = true;
+                    rightGrandson->isBlack = false;
+                    rightRotate(toFix);
+
+                } else if (!leftGreatGrandson->isBlack) {
+                    std::cout << "fixCase4\n";
 
                     leftRotate(brother);
                     rightRotate(toFix);
@@ -356,8 +374,14 @@ private:
 
                 }
             } else{
-                if (!rightGreatGrandson->isBlack) {
-                    std::cout << "fixCas4\n";
+                if(leftGreatGrandson->isBlack && rightGreatGrandson->isBlack){
+                    std::cout<<"fixCase3\n";
+                    brother->isBlack = true;
+                    leftGrandson->isBlack = false;
+                    leftRotate(toFix);
+
+                } else if (!rightGreatGrandson->isBlack) {
+                    std::cout << "fixCase4\n";
 
                     rightRotate(brother);
                     leftRotate(toFix);
@@ -371,7 +395,7 @@ private:
         } else {
 
             if(sideRight && !rightGrandson->isBlack) {
-                std::cout << "fixCase5\n";
+//                std::cout << "fixCase5\n";
 
                 rightGrandson->isBlack = true;
                 leftRotate(brother);
@@ -394,6 +418,7 @@ private:
                         sideRight = true;
                     else
                         sideRight = false;
+
                     deleteFix(toFix->parent, sideRight);
 
                 }
@@ -403,7 +428,67 @@ private:
         }
     }
 
-//    void deleteCase2(Node* node, bool side)
+    Node* get(Node* node, const T& t){
+
+        if(node == nullptr)
+            return nullptr;
+
+        if(t == node->value)
+            return node;
+
+        if(t < node->value)
+            return get(node->left, t);
+        else
+            return get(node->right, t);
+
+    }
+
+    void print(Node* node, int level) const{
+
+        if(node == nullptr)
+            return;
+
+
+        if(node == this->root) {
+            std::cout << node->value << " size = " << node->size;
+            if(node->isBlack)
+                std::cout<< " Black\n";
+            else
+                std::cout<< " Red\n";
+        }
+        else {
+            for(int i = 0; i < level; i++){
+
+                std::cout<<"|\t";
+
+            }
+            std::cout << node->value << " size = " << node->size;
+
+            if (node->isBlack)
+                std::cout << " Black ";
+            else
+                std::cout << " Red ";
+
+            std::cout << "parent " <<  node->parent->value << "\n";
+        }
+
+        print(node->left, level + 1);
+
+        print(node->right, level + 1);
+
+    }
+
+    Node* getStat(Node* node, int index){
+
+        int curPos = getSize(node->left) + 1;
+        if(curPos == index)
+            return node;
+        if(curPos > index)
+            return getStat(node->left, index);
+        else
+            return getStat(node->right, index - curPos);
+
+    }
 
 public:
 
@@ -451,24 +536,6 @@ public:
         erase(root, t);
 
     }
-    void erase(Node* node, const T& t) {
-        if (node == nullptr) {
-            return;
-        }
-
-        node->size--;
-
-        if (t < node->value) {
-            erase(node->left, t);
-
-        }
-        else if (t > node->value) {
-            erase(node->right, t);
-        }
-        else
-            deleteNode(node);
-
-    }
 
     T get(const T& t){
 
@@ -481,53 +548,21 @@ public:
 
     }
 
-    Node* get(Node* node, const T& t){
+    T getStat(int index){
 
-        if(node == nullptr)
-            return nullptr;
+        int curPos = getSize(root->left) + 1;
+        Node* res = getStat(root, index);
 
-        if(t == node->value)
-            return node;
-
-        if(t < node->value)
-            return get(node->left, t);
-        else
-            return get(node->right, t);
+        return res->value;
 
     }
+
     void print() const{
 
-        print(this->root);
+        print(this->root, 0);
 
     }
-    void print(Node* node) const{
 
-        if(node == nullptr)
-            return;
-
-        print(node->left);
-
-        print(node->right);
-
-        if(node == this->root) {
-            std::cout << node->value << " size = " << node->size;
-            if(node->isBlack)
-                std::cout<< " Black\n";
-            else
-                std::cout<< " Red\n";
-        }
-        else {
-            std::cout << node->value << " size = " << node->size;
-
-            if (node->isBlack)
-                std::cout << " Black ";
-            else
-                std::cout << " Red ";
-
-            std::cout << "parent " <<  node->parent->value << "\n";
-        }
-
-    }
 
 
 
