@@ -25,7 +25,7 @@ private:
         Node() {
             left = right = parent = nullptr;
         }
-        explicit Node(T& value){
+        explicit Node(const T& value){
             this->value = value;
             left = right = parent = nullptr;
         }
@@ -38,9 +38,10 @@ private:
 
     void splay(Node* toSplay, Node* rootSplay){
 
+        std::cout << "toSplay = " << toSplay->value << std::endl;
+        std::cout << "rootSplay = " << rootSplay->value << std::endl;
         Node* parent = rootSplay->parent;
         while (toSplay->parent != parent){
-
             if(toSplay->parent->parent == nullptr)
                 if(toSplay == toSplay->parent->left)
                     zig(toSplay, true);
@@ -57,14 +58,18 @@ private:
                         zigZig(toSplay, false);
                     else
                         zigZag(toSplay, true);
+
+
         }
 
-        if(parent == nullptr)
-            this->root == toSplay;
+        if(parent == nullptr) {
+            this->root = toSplay;
+        }
 
     }
 
     void zig(Node* toSplay, bool leftSide){
+        std::cout<<"Zig" << std::endl;
 
         Node* parent = toSplay->parent;
         if(leftSide){
@@ -87,12 +92,13 @@ private:
 
         toSplay->parent = parent->parent;
 
-        if(toSplay->parent != nullptr)
-            if(parent == toSplay->parent->left)
+        if(toSplay->parent != nullptr) {
+            if (parent == toSplay->parent->left) {
                 toSplay->parent->left = toSplay;
-            else
+            } else {
                 toSplay->parent->right = toSplay;
-
+            }
+        }
 
         parent->parent = toSplay;
 
@@ -101,6 +107,7 @@ private:
 
     void zigZig(Node* toSplay, bool leftSide){
 
+        std::cout<<"Zigzig" << std::endl;
         Node* parent = toSplay->parent;
         Node* gran = parent->parent;
 
@@ -114,6 +121,9 @@ private:
             if(toSplay->right != nullptr)
                 parent->left->parent = parent;
 
+            parent->right = gran;
+            toSplay->right = parent;
+
         } else{
 
             gran->right = parent->left;
@@ -124,21 +134,26 @@ private:
             if(toSplay->left != nullptr)
                 parent->right->parent = parent;
 
+            parent->left = gran;
+            toSplay->left = parent;
+
         }
 
+        toSplay->parent = gran->parent;
         if(gran->parent != nullptr){
-            toSplay->parent = gran->parent;
             if(gran == gran->parent->left)
                 gran->parent->left = toSplay;
             else
                 gran->parent->right = toSplay;
         }
+
         gran->parent = parent;
         parent->parent = toSplay;
 
     }
 
     void zigZag(Node* toSplay, bool leftSide){
+        std::cout<<"Zigzag" << std::endl;
 
         Node* parent = toSplay->parent;
         Node* gran = parent->parent;
@@ -187,13 +202,99 @@ private:
 
     }
 
-    void merge(){
+    void merge(Node* rootLeft, Node* rootRight){
+
+        if(rootLeft == nullptr && rootRight == nullptr){
+            this->root = nullptr;
+            return;
+        }
+        if(rootLeft == nullptr){
+            this->root = rootRight;
+            return;
+        }
+        if(rootRight == nullptr){
+
+            this->root = rootLeft;
+            return;
+        }
+
+        Node* maxLeft = rootLeft->right;
+
+        if(maxLeft == nullptr) {
+            rootLeft->right = rootRight;
+            rootRight->parent = rootLeft;
+            this->root = rootLeft;
+            return;
+        }
+
+        while (maxLeft->right != nullptr){
+
+            maxLeft = maxLeft->right;
+
+        }
+
+        splay(maxLeft, rootLeft);
 
 
+        maxLeft->right = rootRight;
+        rootRight->parent = maxLeft;
+        this->root = maxLeft;
 
     }
 
-    void split(){
+    void split(const T& t){
+
+        Node* successor;
+        Node* temp = this->root;
+
+        while(temp != nullptr){
+//            std::cout<<"dfdfd\n";
+            if(temp->value == t) {
+                successor = temp;
+                break;
+            }
+            if(temp->value > t) {
+                successor = temp;
+                temp = temp->left;
+            } else
+                temp = temp->right;
+        }
+
+        splay(successor, this->root);
+
+        Node* toInsert = new Node(t);
+        if(successor->value >= toInsert->value) {
+
+            toInsert->left = successor->left;
+            if (toInsert->left != nullptr)
+                toInsert->left->parent = toInsert;
+            successor->left = nullptr;
+            toInsert->right = successor;
+
+        } else
+            toInsert->left = successor;
+
+        successor->parent = toInsert;
+        this->root = toInsert;
+
+    }
+
+
+
+    Node* erase(Node* node, const T& t) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+
+        if (t < node->value) {
+            return erase(node->left, t);
+
+        }
+        else if (t > node->value) {
+            return erase(node->right, t);
+        }
+        else
+            return node;
 
     }
 
@@ -212,7 +313,7 @@ private:
 
     }
 
-    void print(Node* node, int level) const{
+    void print(Node* node, int level, bool left) const{
 
         if(node == nullptr)
             return;
@@ -228,13 +329,17 @@ private:
                 std::cout<<"|\t";
 
             }
+            if(left)
+                std::cout << "LEFT ";
+            else
+                std::cout << "RIGHT ";
             std::cout << node->value;
-            std::cout << "parent " <<  node->parent->value << "\n";
+            std::cout << " parent " <<  node->parent->value << "\n";
         }
 
-        print(node->left, level + 1);
+        print(node->left, level + 1, true);
 
-        print(node->right, level + 1);
+        print(node->right, level + 1, false);
 
     }
 
@@ -242,18 +347,33 @@ public:
 
     SplayTree(){
 
-        this->root == nullptr;
+        this->root = nullptr;
 
     }
+    ~SplayTree() = default;
 
     void insert(T& t){
 
-
+        if(this->root == nullptr){
+//            std::cout<<"no root"<< std::endl;
+            this->root = new Node(t);
+            return;
+        } else
+            split(t);
 
     }
-    void erase(T& t){
+    void erase(const T& t){
 
-
+//        std::string  breakpoint;
+        Node* toDelete = erase(this->root, t);
+        std::cout << toDelete->value << std::endl;
+        splay(toDelete, this->root);
+//        std::cout<< "--------------splayed---------" <<std::endl;
+//        print(this->root, 0, true);
+//        std::cin>>breakpoint;
+        merge(this->root->left, this->root->right);
+        if(this->root != nullptr)
+            this->root->parent = nullptr;
 
     }
     T get(T& t){
@@ -270,7 +390,7 @@ public:
 
     void print(){
 
-        print(this->root, 0);
+        print(this->root, 0, true);
 
     }
 
