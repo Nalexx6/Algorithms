@@ -59,7 +59,7 @@ private:
                     else
                         zigZag(toSplay, true);
 
-
+//            print();
         }
 
         if(parent == nullptr) {
@@ -166,12 +166,11 @@ private:
 
             gran->left = toSplay->right;
             if(toSplay->right != nullptr)
-                gran->left->parent = parent;
+                gran->left->parent = gran;
 
             toSplay->left = parent;
             toSplay->right = gran;
             parent->parent = toSplay;
-            gran->parent = toSplay;
 
         } else{
 
@@ -181,23 +180,22 @@ private:
 
             gran->right = toSplay->left;
             if(toSplay->left != nullptr)
-                gran->right->parent = parent;
+                gran->right->parent = gran;
 
             toSplay->right = parent;
             toSplay->left = gran;
             parent->parent = toSplay;
-            gran->parent = toSplay;
 
         }
 
+        toSplay->parent = gran->parent;
         if(gran->parent != nullptr){
-            toSplay->parent = gran->parent;
             if(gran == gran->parent->left)
                 gran->parent->left = toSplay;
             else
                 gran->parent->right = toSplay;
         }
-        gran->parent = parent;
+        gran->parent = toSplay;
         parent->parent = toSplay;
 
     }

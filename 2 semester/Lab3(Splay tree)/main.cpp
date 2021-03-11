@@ -15,6 +15,16 @@ int main() {
 
     }
 
+    for(int i = 0; i < 5; i++){
+
+        int k;
+        std::cout << "Enter element to get\n";
+        std::cin >> k;
+        tree->get(k);
+        tree->print();
+
+    }
+
 //    tree->print();
    for(int i = 1; i <= 10; i++){
 
