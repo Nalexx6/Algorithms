@@ -20,7 +20,7 @@ private:
         Node* parent;
         Node* left;
         Node* right;
-        double probability;
+        double probability{};
 
 
         Node() {
@@ -50,7 +50,7 @@ private:
     std::vector<std::vector<int>> roots;
 
 
-    void calculateCases(){
+    void generateTables(){
 
         int size = elements.size();
         for(int i = 1; i < size + 2; i++){
@@ -88,8 +88,7 @@ private:
 
     }
 
-
-    [[nodiscard]] Node* constructBST( Node* node, int lo, int hi){
+    Node* constructBST( Node* node, int lo, int hi){
 
         if(lo > hi)
             return new Node(T(), fictProbs[hi]);
@@ -135,7 +134,16 @@ private:
 
     }
 
+    void destroy(Node* toDestroy){
+        if(toDestroy == nullptr)
+            return;
 
+        destroy(toDestroy->left);
+        destroy(toDestroy->right);
+
+        delete toDestroy;
+
+    }
 public:
 
     OptimalBST( const std::vector<T>& elements, const std::vector<double>& probs,
@@ -166,7 +174,7 @@ public:
 
 
 
-        calculateCases();
+        generateTables();
 
         std::cout << "----------------------expected values--------------\n";
         for(auto&  i : expectedValues) {
@@ -198,6 +206,28 @@ public:
 
 
         this->root = constructBST(nullptr, 1, size);
+
+    }
+
+    ~OptimalBST(){
+
+        for(int i = 0; i < elements.size() + 2; i++){
+
+            expectedValues[i].clear();
+            probsSum[i].clear();
+
+        }
+        for(int i = 0; i < elements.size() + 1; i++){
+
+            roots[i].clear();
+        }
+
+        expectedValues.clear();
+        probsSum.clear();
+        roots.clear();
+
+        destroy(this->root);
+        std::cout<< "tree destroyed\n";
 
     }
 
