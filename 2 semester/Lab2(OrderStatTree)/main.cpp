@@ -7,7 +7,7 @@ int main() {
 
    Tree<int>* tree = new Tree<int>;
 
-   int ar[10] = { 4, 2, 6, 1, 5, 3, 8, 7, 9};
+   int ar[10] = { 4, 2, 3, 1, 5, 6, 8, 7, 9};
 
    for(int i = 0; i < 9; i++){
 

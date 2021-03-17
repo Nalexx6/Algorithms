@@ -39,6 +39,9 @@ class PersistentSet{
         }
 
         Node(Node* toCopy) {
+            if(toCopy == nullptr)
+                return;
+
             this->value = toCopy->value;
             this->left = toCopy->left;
             this->right = toCopy->right;
@@ -52,10 +55,15 @@ class PersistentSet{
                 right->parent = this;
 
             if (parent != nullptr) {
-                if (parent->left->value == value)
-                    parent->left = this;
-                else
+                if(parent->left != nullptr) {
+                    if (parent->left->value == value) {
+                        parent->left = this;
+                    } else
+                        parent->right = this;
+                }
+                else {
                     parent->right = this;
+                }
             }
         }
 
@@ -64,7 +72,7 @@ class PersistentSet{
 
     void insertCase1(Node *toFix) {
 
-        std::cout<<"fixCase1\n";
+//        std::cout<<"fixCase1\n";
         if (toFix->parent == nullptr)
             toFix->isBlack = true;
         else if (!toFix->parent->isBlack)
@@ -74,25 +82,27 @@ class PersistentSet{
 
     void insertCase2(Node *toFix) {
 
-        std::cout<<"fixCase2\n";
+//        std::cout<<"fixCase2\n";
         Node *uncle;
         Node *gran = new Node(toFix->parent->parent);
         if(gran->parent == nullptr)
             roots[roots.size() - 1] = gran;
         Node* parent = new Node(toFix->parent);
-        if(parent->parent == gran)
-            std::cout<<"dffsds\n";
-        if(gran->left == parent)
-            std::cout<<"dffsds\n";
         if (gran == nullptr)
             uncle = nullptr;
         else if (toFix->parent == gran->left) {
-            uncle = new Node(gran->right);
-            gran->right = uncle;
+            if(gran->right != nullptr) {
+                uncle = new Node(gran->right);
+                gran->right = uncle;
+            } else
+                uncle = nullptr;
         }
         else {
-            uncle = new Node(gran->left);
-            gran->left = uncle;
+            if(gran->left != nullptr) {
+                uncle = new Node(gran->left);
+                gran->left = uncle;
+            }else
+                uncle = nullptr;
         }
 
         if (uncle != nullptr && !uncle->isBlack) {
@@ -114,8 +124,11 @@ class PersistentSet{
 
         if (toFix == toFix->parent->right && toFix->parent == gran->left) {
 
+
             Node *savedParent = new Node(gran->left);
-            Node *savedBrother = new Node(toFix->left);
+            Node *savedBrother = nullptr;
+            if(toFix->left != nullptr)
+                savedBrother = new Node(toFix->left);
 
             gran->left = toFix;
             toFix->parent = gran;
@@ -124,14 +137,18 @@ class PersistentSet{
             savedParent->parent = toFix;
 
             savedParent->right = savedBrother;
-            savedParent->right->parent = savedParent;
+            if(savedBrother != nullptr)
+                savedParent->right->parent = savedParent;
 
             toFix = toFix->left;
 
         } else if (toFix == toFix->parent->left && toFix->parent == gran->right) {
 
             Node *savedParent = new Node(gran->right);
-            Node *savedBrother = new Node(toFix->right);
+            Node *savedBrother = nullptr;
+            if(toFix->right != nullptr)
+               savedBrother = new Node(toFix->right);
+
 
             gran->right = toFix;
             toFix->parent = gran;
@@ -140,7 +157,8 @@ class PersistentSet{
             savedParent->parent = toFix;
 
             savedParent->left = savedBrother;
-            savedParent->left->parent = savedParent;
+            if(savedBrother != nullptr)
+                savedParent->left->parent = savedParent;
 
             toFix = toFix->right;
 
@@ -276,11 +294,6 @@ public:
 
     void insert(T& t){
 
-//        if(roots.empty()) {
-//            roots.push_back(new Node(t, nullptr, nullptr, nullptr));
-//            return;
-//        }
-
         Node* temp = roots[roots.size() - 1];
 
         Node *futureParent = nullptr;
@@ -316,7 +329,7 @@ public:
 
     void print(){
 
-//        for(int i = roots.size(); i < roots.size(); i++) {
+//        for(int i = 0; i < roots.size(); i++) {
 //            backupTree(roots[i], nullptr);
 //            std::cout << "------------------------" << i << " version---------------------------\n";
 //            print(roots[i], 0, true);

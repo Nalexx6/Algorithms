@@ -81,26 +81,40 @@ private:
 
     void insertCase3(Node *toFix) {
 
-//        std::cout<<"fixCase3\n";
+        std::cout<<"fixCase3\n";
         Node *gran = toFix->parent->parent;
         if (toFix == toFix->parent->right && toFix->parent == gran->left) {
 
             Node *savedParent = gran->left;
-            Node *savedBrother = toFix->parent->left;
+            Node *savedBrother = toFix->left;
 
             gran->left = toFix;
+            toFix->parent = gran;
+
             toFix->left = savedParent;
+            savedParent->parent = toFix;
+
             savedParent->right = savedBrother;
+            if(savedBrother != nullptr)
+                savedParent->right->parent = savedParent;
+
             toFix = toFix->left;
 
         } else if (toFix == toFix->parent->left && toFix->parent == gran->right) {
 
             Node *savedParent = gran->right;
-            Node *savedBrother = toFix->parent->right;
+            Node *savedBrother = toFix->right;
 
             gran->right = toFix;
+            toFix->parent = gran;
+
             toFix->right = savedParent;
+            savedParent->parent = toFix;
+
             savedParent->left = savedBrother;
+            if(savedBrother != nullptr)
+                savedParent->left->parent = savedParent;
+
             toFix = toFix->right;
 
         }
@@ -110,7 +124,7 @@ private:
 
     void insertCase4(Node *toFix) {
 
-//        std::cout<<"fixCase4\n";
+        std::cout<<"fixCase4\n";
         Node *gran = toFix->parent->parent;
 
         toFix->parent->isBlack = true;
