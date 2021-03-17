@@ -7,9 +7,9 @@ int main() {
 
    Tree<int>* tree = new Tree<int>;
 
-   int ar[10] = { 7, 5, 3, 6, 8, 4, 9, 1, 2, 10};
+   int ar[10] = { 4, 2, 6, 1, 5, 3, 8, 7, 9};
 
-   for(int i = 0; i < 10; i++){
+   for(int i = 0; i < 9; i++){
 
        tree->insert(ar[i]);
        std::cout << "------------insert---------\n";
@@ -18,7 +18,9 @@ int main() {
 
    }
 
-   std::cout<<tree->getStat(10);
+
+
+   std::cout<<tree->getStat(4);
 
 //   for(int i = 0; i < 10; i++){
 //

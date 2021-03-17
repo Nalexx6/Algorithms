@@ -11,13 +11,13 @@ template <typename T>
 class Tree {
 
 private:
-    class Node{
+    class Node {
 
     public:
         T value;
-        Node* parent;
-        Node* left;
-        Node* right;
+        Node *parent;
+        Node *left;
+        Node *right;
         bool isBlack;
         int size;
 
@@ -27,7 +27,8 @@ private:
             isBlack = true;
             size = 1;
         }
-        explicit Node(T& value){
+
+        explicit Node(T &value) {
             this->value = value;
             left = right = parent = nullptr;
             isBlack = false;
@@ -37,38 +38,38 @@ private:
         ~Node() = default;
     };
 
-    Node* root;
+    Node *root;
 
-    int getSize(Node* node) const{
-        if(node == nullptr)
+    int getSize(Node *node) const {
+        if (node == nullptr)
             return 0;
 
         return node->size;
     }
 
-    void insertCase1(Node* toFix){
+    void insertCase1(Node *toFix) {
 
 //        std::cout<<"fixCase1\n";
-        if(toFix->parent == nullptr)
+        if (toFix->parent == nullptr)
             this->root->isBlack = true;
-        else if(!toFix->parent->isBlack)
+        else if (!toFix->parent->isBlack)
             insertCase2(toFix);
 
     }
 
-    void insertCase2(Node* toFix){
+    void insertCase2(Node *toFix) {
 
 //        std::cout<<"fixCase2\n";
-        Node* uncle;
-        Node* gran = toFix->parent->parent;
-        if(gran == nullptr)
+        Node *uncle;
+        Node *gran = toFix->parent->parent;
+        if (gran == nullptr)
             uncle = nullptr;
-        else if(toFix->parent == gran->left)
+        else if (toFix->parent == gran->left)
             uncle = gran->right;
         else
             uncle = gran->left;
 
-        if(uncle != nullptr && !uncle->isBlack){
+        if (uncle != nullptr && !uncle->isBlack) {
             toFix->parent->isBlack = true;
             uncle->isBlack = true;
             gran->isBlack = false;
@@ -78,24 +79,24 @@ private:
 
     }
 
-    void insertCase3(Node* toFix){
+    void insertCase3(Node *toFix) {
 
 //        std::cout<<"fixCase3\n";
-        Node* gran = toFix->parent->parent;
-        if(toFix == toFix->parent->right && toFix->parent == gran->left){
+        Node *gran = toFix->parent->parent;
+        if (toFix == toFix->parent->right && toFix->parent == gran->left) {
 
-            Node* savedParent = gran->left;
-            Node* savedBrother = toFix->parent->left;
+            Node *savedParent = gran->left;
+            Node *savedBrother = toFix->parent->left;
 
             gran->left = toFix;
             toFix->left = savedParent;
             savedParent->right = savedBrother;
             toFix = toFix->left;
 
-        } else if(toFix == toFix->parent->left && toFix->parent == gran->right){
+        } else if (toFix == toFix->parent->left && toFix->parent == gran->right) {
 
-            Node* savedParent = gran->right;
-            Node* savedBrother = toFix->parent->right;
+            Node *savedParent = gran->right;
+            Node *savedBrother = toFix->parent->right;
 
             gran->right = toFix;
             toFix->right = savedParent;
@@ -107,41 +108,40 @@ private:
         insertCase4(toFix);
     }
 
-    void insertCase4(Node* toFix){
+    void insertCase4(Node *toFix) {
 
 //        std::cout<<"fixCase4\n";
-        Node* gran = toFix->parent->parent;
+        Node *gran = toFix->parent->parent;
 
         toFix->parent->isBlack = true;
         gran->isBlack = false;
 
-        if(toFix == toFix->parent->left && toFix->parent == gran->left)
+        if (toFix == toFix->parent->left && toFix->parent == gran->left)
             rightRotate(gran);
         else
             leftRotate(gran);
 
     }
 
-    void leftRotate(Node* toRotate){
+    void leftRotate(Node *toRotate) {
 
 //        std::cout<<"leftRotate\n";
 
-        Node* pivot = toRotate->right;
+        Node *pivot = toRotate->right;
 
         pivot->parent = toRotate->parent;
 
-        if(toRotate->parent != nullptr) {
+        if (toRotate->parent != nullptr) {
             if (toRotate->parent->left == toRotate) {
                 toRotate->parent->left = pivot;
             } else {
                 toRotate->parent->right = pivot;
             }
-        }
-        else
+        } else
             this->root = pivot;
 
         toRotate->right = pivot->left;
-        if(pivot->left != nullptr)
+        if (pivot->left != nullptr)
             pivot->left->parent = toRotate;
 
         toRotate->parent = pivot;
@@ -152,13 +152,14 @@ private:
 
 
     }
-    void rightRotate(Node* toRotate){
+
+    void rightRotate(Node *toRotate) {
 
 //        std::cout<<"rightRotate\n";
-        Node* pivot = toRotate->left;
+        Node *pivot = toRotate->left;
 
         pivot->parent = toRotate->parent;
-        if(toRotate->parent != nullptr)
+        if (toRotate->parent != nullptr)
             if (toRotate->parent->left == toRotate)
                 toRotate->parent->left = pivot;
             else
@@ -167,7 +168,7 @@ private:
             this->root = pivot;
 
         toRotate->left = pivot->right;
-        if(pivot->right!= nullptr)
+        if (pivot->right != nullptr)
             pivot->right->parent = toRotate;
 
         toRotate->parent = pivot;
@@ -178,7 +179,7 @@ private:
 
     }
 
-    void erase(Node* node, const T& t) {
+    void erase(Node *node, const T &t) {
         if (node == nullptr) {
             return;
         }
@@ -188,49 +189,47 @@ private:
         if (t < node->value) {
             erase(node->left, t);
 
-        }
-        else if (t > node->value) {
+        } else if (t > node->value) {
             erase(node->right, t);
-        }
-        else
+        } else
             deleteNode(node);
 
     }
 
-    void deleteNode(Node* toDelete){
-        if(toDelete->right == nullptr && toDelete->left == nullptr){
-            if(toDelete == root){
+    void deleteNode(Node *toDelete) {
+        if (toDelete->right == nullptr && toDelete->left == nullptr) {
+            if (toDelete == root) {
                 root == nullptr;
                 return;
             }
             bool sideRight;
-            if(toDelete == toDelete->parent->right){
+            if (toDelete == toDelete->parent->right) {
                 toDelete->parent->right = nullptr;
                 sideRight = true;
-            } else{
+            } else {
                 toDelete->parent->left = nullptr;
                 sideRight = false;
             }
 //            toDelete->parent->size--;
-            if(toDelete->isBlack) {
-                std::cout<< "balance" << std::endl;
+            if (toDelete->isBlack) {
+                std::cout << "balance" << std::endl;
                 deleteFix(toDelete->parent, sideRight);
             }
 
             delete toDelete;
             return;
         }
-        if(toDelete->right == nullptr && toDelete->left != nullptr){
-            if(toDelete == root){
+        if (toDelete->right == nullptr && toDelete->left != nullptr) {
+            if (toDelete == root) {
                 root = toDelete->left;
                 root->parent = nullptr;
                 delete toDelete;
                 return;
             }
-            if(toDelete == toDelete->parent->right){
+            if (toDelete == toDelete->parent->right) {
                 toDelete->parent->right = toDelete->left;
                 toDelete->left->parent = toDelete->parent;
-            } else{
+            } else {
                 toDelete->parent->left = toDelete->left;
                 toDelete->left->parent = toDelete->parent;
             }
@@ -239,17 +238,17 @@ private:
             delete toDelete;
             return;
         }
-        if(toDelete->right != nullptr && toDelete->left == nullptr){
-            if(toDelete == root){
+        if (toDelete->right != nullptr && toDelete->left == nullptr) {
+            if (toDelete == root) {
                 root = toDelete->right;
                 root->parent = nullptr;
                 delete toDelete;
                 return;
             }
-            if(toDelete == toDelete->parent->right){
+            if (toDelete == toDelete->parent->right) {
                 toDelete->parent->right = toDelete->right;
                 toDelete->right->parent = toDelete->parent;
-            } else{
+            } else {
                 toDelete->parent->left = toDelete->right;
                 toDelete->right->parent = toDelete->parent;
 
@@ -258,13 +257,12 @@ private:
             toDelete->right->isBlack = toDelete->isBlack;
             delete toDelete;
             return;
-        }
-        else{
-            Node* successor = toDelete;
+        } else {
+            Node *successor = toDelete;
             successor = successor->left;
 
-            while(true){
-                if(successor->right != nullptr) {
+            while (true) {
+                if (successor->right != nullptr) {
                     successor->size--;
                     successor = successor->right;
                 } else
@@ -277,30 +275,30 @@ private:
         }
     }
 
-    void deleteFix(Node* toFix, bool& sideRight){
+    void deleteFix(Node *toFix, bool &sideRight) {
 
-        Node* brother;
-        if(sideRight)
+        Node *brother;
+        if (sideRight)
             brother = toFix->left;
         else
             brother = toFix->right;
-        Node* leftGrandson = brother->left;
-        Node* rightGrandson = brother->right;
+        Node *leftGrandson = brother->left;
+        Node *rightGrandson = brother->right;
 
-        if(leftGrandson == nullptr)
+        if (leftGrandson == nullptr)
             leftGrandson = new Node();
-        if(rightGrandson == nullptr)
+        if (rightGrandson == nullptr)
             rightGrandson = new Node();
 
-        if(!toFix->isBlack && brother->isBlack) {
+        if (!toFix->isBlack && brother->isBlack) {
 
-            if(leftGrandson->isBlack && rightGrandson->isBlack){
-                std::cout<<"fixCase1\n";
+            if (leftGrandson->isBlack && rightGrandson->isBlack) {
+                std::cout << "fixCase1\n";
                 toFix->isBlack = true;
                 brother->isBlack = false;
 
-            } else{
-                if(sideRight) {
+            } else {
+                if (sideRight) {
                     if (!leftGrandson->isBlack) {
                         std::cout << "fixCase2.1\n";
                         toFix->isBlack = true;
@@ -315,8 +313,7 @@ private:
                         leftRotate(brother);
                         rightRotate(toFix);
                     }
-                }
-                else {
+                } else {
 
                     if (!rightGrandson->isBlack) {
                         std::cout << "fixCase2.1\n";
@@ -337,30 +334,28 @@ private:
 
             }
             //if(leftGrandson->isBlack
-        } else if(toFix->isBlack && !brother->isBlack){
+        } else if (toFix->isBlack && !brother->isBlack) {
 
             Node *leftGreatGrandson;
             Node *rightGreatGrandson;
 
-            if(sideRight) {
+            if (sideRight) {
                 leftGreatGrandson = rightGrandson->left;
                 rightGreatGrandson = rightGrandson->right;
-            }
-            else {
+            } else {
                 leftGreatGrandson = leftGrandson->left;
                 rightGreatGrandson = leftGrandson->right;
             }
 
-            if(leftGreatGrandson == nullptr)
+            if (leftGreatGrandson == nullptr)
                 leftGreatGrandson = new Node();
-            if(rightGreatGrandson == nullptr)
+            if (rightGreatGrandson == nullptr)
                 rightGreatGrandson = new Node();
 
 
-
-            if(sideRight) {
-                if(leftGreatGrandson->isBlack && rightGreatGrandson->isBlack){
-                    std::cout<<"fixCase3\n";
+            if (sideRight) {
+                if (leftGreatGrandson->isBlack && rightGreatGrandson->isBlack) {
+                    std::cout << "fixCase3\n";
                     brother->isBlack = true;
                     rightGrandson->isBlack = false;
                     rightRotate(toFix);
@@ -373,9 +368,9 @@ private:
                     leftGrandson->isBlack = true;
 
                 }
-            } else{
-                if(leftGreatGrandson->isBlack && rightGreatGrandson->isBlack){
-                    std::cout<<"fixCase3\n";
+            } else {
+                if (leftGreatGrandson->isBlack && rightGreatGrandson->isBlack) {
+                    std::cout << "fixCase3\n";
                     brother->isBlack = true;
                     leftGrandson->isBlack = false;
                     leftRotate(toFix);
@@ -391,17 +386,16 @@ private:
             }
 
 
-
         } else {
 
-            if(sideRight && !rightGrandson->isBlack) {
+            if (sideRight && !rightGrandson->isBlack) {
 //                std::cout << "fixCase5\n";
 
                 rightGrandson->isBlack = true;
                 leftRotate(brother);
                 rightRotate(toFix);
 
-            } else if(!sideRight && !leftGrandson->isBlack) {
+            } else if (!sideRight && !leftGrandson->isBlack) {
 
                 std::cout << "fixCase5\n";
 
@@ -410,11 +404,11 @@ private:
                 leftRotate(toFix);
 
             } else {
-                std::cout<<"fixCase6\n";
+                std::cout << "fixCase6\n";
                 brother->isBlack = false;
-                if(toFix->parent != nullptr){
+                if (toFix->parent != nullptr) {
 
-                    if(toFix == toFix->parent->right)
+                    if (toFix == toFix->parent->right)
                         sideRight = true;
                     else
                         sideRight = false;
@@ -428,62 +422,66 @@ private:
         }
     }
 
-    Node* get(Node* node, const T& t){
+    Node *get(Node *node, const T &t) {
 
-        if(node == nullptr)
+        if (node == nullptr)
             return nullptr;
 
-        if(t == node->value)
+        if (t == node->value)
             return node;
 
-        if(t < node->value)
+        if (t < node->value)
             return get(node->left, t);
         else
             return get(node->right, t);
 
     }
 
-    void print(Node* node, int level) const{
+    void print(Node *node, int level, bool left) const {
 
-        if(node == nullptr)
+        if (node == nullptr)
             return;
 
 
-        if(node == this->root) {
+        if (node == this->root) {
             std::cout << node->value << " size = " << node->size;
-            if(node->isBlack)
-                std::cout<< " Black\n";
+            if (node->isBlack)
+                std::cout << " Black\n";
             else
-                std::cout<< " Red\n";
-        }
-        else {
-            for(int i = 0; i < level; i++){
+                std::cout << " Red\n";
+        } else {
+            for (int i = 0; i < level; i++) {
 
-                std::cout<<"|\t";
+                std::cout << "|\t";
 
             }
-            std::cout << node->value << " size = " << node->size;
+            std::cout << node->value << " size = " << node->size << " ";
+
+            if(left)
+                std::cout << "LEFT ";
+            else
+                std::cout << "RIGHT ";
 
             if (node->isBlack)
-                std::cout << " Black ";
+                std::cout << "Black ";
             else
-                std::cout << " Red ";
+                std::cout << "Red ";
 
-            std::cout << "parent " <<  node->parent->value << "\n";
+            std::cout << "parent " << node->parent->value << "\n";
         }
 
-        print(node->left, level + 1);
+        print(node->left, level + 1, true);
 
-        print(node->right, level + 1);
+        print(node->right, level + 1, false);
 
     }
 
-    Node* getStat(Node* node, int index){
+    Node *getStat(Node *node, int index) {
 
         int curPos = getSize(node->left) + 1;
-        if(curPos == index)
+        if (curPos == index)
             return node;
-        if(curPos > index)
+        if (curPos > index)
             return getStat(node->left, index);
         else
             return getStat(node->right, index - curPos);
@@ -492,7 +490,7 @@ private:
 
 public:
 
-    Tree(){
+    Tree() {
 
         this->root = nullptr;
 //        size = 0;
@@ -501,18 +499,18 @@ public:
 
     ~Tree() = default;
 
-    void insert(T& t){
+    void insert(T &t) {
 
-        Node* temp = root;
-        Node* futureParent = nullptr;
-        Node* toInsert = new Node(t);
+        Node *temp = root;
+        Node *futureParent = nullptr;
+        Node *toInsert = new Node(t);
 
-        while (temp != nullptr){
+        while (temp != nullptr) {
 
             futureParent = temp;
             temp->size++;
 
-            if(toInsert->value < temp->value)
+            if (toInsert->value < temp->value)
                 temp = temp->left;
             else
                 temp = temp->right;
@@ -521,9 +519,9 @@ public:
 
         toInsert->parent = futureParent;
 
-        if(futureParent == nullptr)
+        if (futureParent == nullptr)
             this->root = toInsert;
-        else if(toInsert->value < futureParent->value)
+        else if (toInsert->value < futureParent->value)
             futureParent->left = toInsert;
         else
             futureParent->right = toInsert;
@@ -531,40 +529,36 @@ public:
         insertCase1(toInsert);
     }
 
-    void erase(const T& t){
+    void erase(const T &t) {
 
         erase(root, t);
 
     }
 
-    T get(const T& t){
+    T get(const T &t) {
 
-        Node* res = get(root, t);
+        Node *res = get(root, t);
 
-        if(res == nullptr)
+        if (res == nullptr)
             return T();
 
         return res->value;
 
     }
 
-    T getStat(int index){
+    T getStat(int index) {
 
-        int curPos = getSize(root->left) + 1;
-        Node* res = getStat(root, index);
+        Node *res = getStat(root, index);
 
         return res->value;
 
     }
 
-    void print() const{
+    void print() const {
 
-        print(this->root, 0);
+        print(this->root, 0, true);
 
     }
-
-
-
 
 };
 
