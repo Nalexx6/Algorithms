@@ -22,15 +22,15 @@ int main() {
 
    std::cout<<tree->getStat(4);
 
-//   for(int i = 0; i < 10; i++){
-//
-//       std::cout << "-------------------deleting------------\n";
-//
-//       tree->erase(i);
+   for(int i = 0; i < 9; i++){
+
+       std::cout << "-------------------deleting------------\n";
+
+       tree->erase(i + 1);
+       tree->print();
 //       tree->print();
-////       tree->print();
-//
-//   }
+
+   }
 
 
 

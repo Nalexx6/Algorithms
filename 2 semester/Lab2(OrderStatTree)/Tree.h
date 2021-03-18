@@ -23,6 +23,7 @@ private:
 
 
         Node() {
+            value = T();
             left = right = parent = nullptr;
             isBlack = true;
             size = 1;
@@ -402,21 +403,27 @@ private:
 
         } else {
 
-            if (sideRight && !rightGrandson->isBlack) {
+            if (sideRight) {
 //                std::cout << "fixCase5\n";
+                if(!rightGrandson->isBlack) {
+                    rightGrandson->isBlack = true;
+                    leftRotate(brother);
+                    rightRotate(toFix);
+                } else if(!leftGrandson->isBlack && rightGrandson->parent == nullptr) {
+                    leftGrandson->isBlack = true;
+                    rightRotate(toFix);
+                }
+            } else if (!sideRight) {
 
-                rightGrandson->isBlack = true;
-                leftRotate(brother);
-                rightRotate(toFix);
-
-            } else if (!sideRight && !leftGrandson->isBlack) {
-
-                std::cout << "fixCase5\n";
-
-                leftGrandson->isBlack = true;
-                rightRotate(brother);
-                leftRotate(toFix);
-
+                if(!leftGrandson->isBlack) {
+                    std::cout << "fixCase5\n";
+                    leftGrandson->isBlack = true;
+                    rightRotate(brother);
+                    leftRotate(toFix);
+                } else if(!rightGrandson->isBlack && leftGrandson->parent == nullptr){
+                    rightGrandson->isBlack = true;
+                    leftRotate(toFix);
+                }
             } else {
                 std::cout << "fixCase6\n";
                 brother->isBlack = false;
