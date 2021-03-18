@@ -14,5 +14,15 @@ int main() {
 
     }
 
+    for(int i = 1; i < 9; i++){
+
+        persistentSet->erase(i);
+        std::cout << "------------delete---------\n";
+        persistentSet->print();
+
+
+    }
+
+
 
 }
