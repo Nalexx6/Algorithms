@@ -82,7 +82,6 @@ private:
         Node* temp = unitedHead;
         Node* next = unitedHead->brother;
         while(next != nullptr){
-            std::cout<<next->value<<"\n";
             if(temp->degree != next->degree){
                 prev = temp;
                 temp = next;
@@ -110,7 +109,7 @@ private:
     }
 
     void testPrint(Node* node){
-        while (node!= nullptr){
+        while (node != nullptr){
             std::cout << node->value << "\t";
             node = node->brother;
         }
@@ -160,12 +159,40 @@ public:
         this->head = heapUnion(toInsert, head);
     }
 
+    T extractMin(){
+
+        Node* toExtract = head;
+        Node* temp = head;
+        Node* prev = nullptr;
+        Node* next = temp->brother;
+        while (next != nullptr){
+            if(next->value < toExtract->value) {
+                prev = temp;
+                toExtract = next;
+            }
+            temp = next;
+            next = next->brother;
+
+        }
+        prev->brother = toExtract->brother;
+
+        Node* secondHead = toExtract->child;
+        prev = nullptr;
+        while (secondHead != nullptr) {
+            secondHead->parent = nullptr;
+            next = secondHead->brother;
+            secondHead->brother = prev;
+            prev = secondHead;
+            secondHead = next;
+        }
+        secondHead = prev;
+
+        head = heapUnion(secondHead, head);
+
+        return toExtract->value;
+    }
+
     void print(){
-//        Node* temp = head;
-//        while (temp != nullptr){
-//
-//            print(temp, temp->degree);
-//        }
         print(head, 0);
     }
 

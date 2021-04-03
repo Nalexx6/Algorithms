@@ -13,4 +13,8 @@ int main() {
 
 
     }
+
+    heap->extractMin();
+    std::cout<<"------------extract min-------------\n";
+    heap->print();
 }
