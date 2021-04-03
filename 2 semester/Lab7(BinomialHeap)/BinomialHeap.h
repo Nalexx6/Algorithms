@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 template <typename T>
 class BinomialHeap{
@@ -22,11 +23,7 @@ private:
         int degree;
         T value;
 
-        Node(){
-
-        }
-
-        Node(T& value){
+        explicit Node(T& value){
             parent = nullptr;
             brother = nullptr;
             child = nullptr;
@@ -82,12 +79,10 @@ private:
         Node* temp = unitedHead;
         Node* next = unitedHead->brother;
         while(next != nullptr){
-            if(temp->degree != next->degree){
+            if((temp->degree != next->degree) ||
+                    (next->brother != nullptr && next->degree == next->brother->degree)){
                 prev = temp;
                 temp = next;
-            } else if(next->brother != nullptr && next->degree == next->brother->degree){
-                    prev = temp;
-                    temp = next;
             } else if(temp->value <= next->value){
                 temp->brother = next->brother;
                 link(next, temp);
@@ -122,6 +117,30 @@ private:
         greaterRoot->brother = lesserRoot->child;
         lesserRoot->child = greaterRoot;
         lesserRoot->degree++;
+
+    }
+
+    Node* findNodeByIndex(Node* curNode, int index, int curPos){
+
+        if(curPos == index)
+            return curNode;
+
+        int pos = curPos + std::pow(2, curNode->degree) - 1;
+
+        if(pos <= index){
+            if(curNode->parent == nullptr){
+                return findNodeByIndex(curNode->brother, index, pos + 1);
+            } else{
+                return findNodeByIndex(curNode->child, index, curPos + std::pow(2, curNode->degree - 1));
+            }
+        } else{
+            if(curNode->parent == nullptr){
+                return findNodeByIndex(curNode->child, index, curPos + std::pow(2, curNode->degree - 1));
+            } else{
+                return findNodeByIndex(curNode->brother, index, curPos - std::pow(2, curNode->degree - 1));
+            }
+        }
+
 
     }
 
@@ -174,7 +193,13 @@ public:
             next = next->brother;
 
         }
-        prev->brother = toExtract->brother;
+
+        if(prev != nullptr) {
+            prev->brother = toExtract->brother;
+        } else{
+            head = toExtract->brother;
+        }
+
 
         Node* secondHead = toExtract->child;
         prev = nullptr;
@@ -187,9 +212,27 @@ public:
         }
         secondHead = prev;
 
-        head = heapUnion(secondHead, head);
+        if(head || secondHead)
+            head = heapUnion(secondHead, head);
 
         return toExtract->value;
+    }
+
+    void decreaseKey(int index, T value){
+
+        Node* toDecrease = findNodeByIndex(head, index, 0);
+        if(toDecrease->value <= value){
+            return;
+        }
+        toDecrease->value = value;
+
+        T temp = toDecrease->value;
+        while (toDecrease->parent && toDecrease->parent->value > toDecrease->value){
+            toDecrease->value = toDecrease->parent->value;
+            toDecrease->parent->value = temp;
+            toDecrease = toDecrease->parent;
+        }
+
     }
 
     void print(){

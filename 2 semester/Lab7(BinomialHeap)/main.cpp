@@ -11,10 +11,17 @@ int main() {
         std::cout << "------------insert---------\n";
         heap->print();
 
-
     }
 
-    heap->extractMin();
-    std::cout<<"------------extract min-------------\n";
+    heap->decreaseKey(4, -1);
+    std::cout << "------------decrease key-------------\n";
     heap->print();
+
+    for(int i = 0; i < 9; i++) {
+        heap->extractMin();
+        std::cout << "------------extract min-------------\n";
+        heap->print();
+    }
+
+
 }
