@@ -73,8 +73,6 @@ private:
 
         Node* unitedHead = merge(toUnite1,  toUnite2);
 
-//        testPrint(unitedHead);
-
         Node* prev = nullptr;
         Node* temp = unitedHead;
         Node* next = unitedHead->brother;
@@ -101,14 +99,6 @@ private:
 
         return unitedHead;
 
-    }
-
-    void testPrint(Node* node){
-        while (node != nullptr){
-            std::cout << node->value << "\t";
-            node = node->brother;
-        }
-        std::cout << "\n";;
     }
 
     void link(Node* greaterRoot, Node* lesserRoot){
@@ -140,7 +130,6 @@ private:
                 return findNodeByIndex(curNode->brother, index, curPos - std::pow(2, curNode->degree - 1));
             }
         }
-
 
     }
 
@@ -200,7 +189,6 @@ public:
             head = toExtract->brother;
         }
 
-
         Node* secondHead = toExtract->child;
         prev = nullptr;
         while (secondHead != nullptr) {
@@ -235,10 +223,14 @@ public:
 
     }
 
+    void erase(int index){
+        decreaseKey(index, INT_MIN);
+        extractMin();
+    }
+
     void print(){
         print(head, 0);
     }
-
 
 };
 
