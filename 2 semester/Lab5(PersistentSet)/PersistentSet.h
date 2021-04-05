@@ -39,7 +39,7 @@ private:
             this->isBlack = false;
         }
 
-        Node(Node* toCopy) {
+        explicit Node(Node* toCopy) {
             if(toCopy == nullptr)
                 return;
 
@@ -615,14 +615,14 @@ public:
 
     void print(){
 
-//        for(int i = 0; i < roots.size(); i++) {
-//            backupTree(roots[i], nullptr);
-//            std::cout << "------------------------" << i << " version---------------------------\n";
-//            print(roots[i], 0, true);
-//        }
+        for(int i = 0; i < roots.size(); i++) {
+            backupTree(roots[i], nullptr);
+            std::cout << "------------------------" << i << " version---------------------------\n";
+            print(roots[i], 0, true);
+        }
 
-        backupTree(roots[roots.size() - 1], nullptr);
-        print(roots[roots.size() - 1], 0, true);
+//        backupTree(roots[roots.size() - 1], nullptr);
+//        print(roots[roots.size() - 1], 0, true);
 
     }
 

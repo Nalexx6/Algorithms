@@ -172,6 +172,13 @@ public:
             roots[i].assign(size + 1, 0);
         }
 
+//        for(int i = 0; i < size + 1; i++){
+//
+//            roots[i][i] = i;
+//
+//        }
+
+
 
 
         generateTables();
