@@ -299,6 +299,18 @@ public:
         erase(toDelete, key);
     }
 
+    T search(K key){
+
+        Node* toFind = findLeaf(root, key);
+
+        int pos = 0;
+        while (pos < toFind->elements.size() && toFind->elements[pos].key < key){
+            pos++;
+        }
+
+        return toFind->elements[pos].value;
+    }
+
     void print(){
 
         print(root, 0);
