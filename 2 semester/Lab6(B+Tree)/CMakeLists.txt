@@ -3,4 +3,4 @@ project(Lab6_B_Tree_)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Lab6_B_Tree_ main.cpp BplusTree.h BplusTree.cpp)
+add_executable(Lab6_B_Tree_ main.cpp BplusTree.h)
