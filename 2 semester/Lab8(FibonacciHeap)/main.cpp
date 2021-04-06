@@ -12,15 +12,15 @@ int main() {
 
     }
 
-//    heap->decreaseKey(4, -1);
-//    std::cout << "------------decrease key-------------\n";
-//    heap->print();
-//
-//    heap->erase(5);
-//    std::cout << "------------delete-------------\n";
-//    heap->print();
-//
-    for(int i = 0; i < 9; i++) {
+    heap->decreaseKey(4, -1);
+    std::cout << "------------decrease key-------------\n";
+    heap->print();
+
+    heap->erase(5);
+    std::cout << "------------delete-------------\n";
+    heap->print();
+
+    for(int i = 0; i < 8; i++) {
         heap->extractMin();
         std::cout << "------------extract min-------------\n";
         heap->print();

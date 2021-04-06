@@ -13,6 +13,7 @@ template <typename T>
 class FibonacciHeap{
 
 private:
+
     class Node{
     public:
         T value;
@@ -20,7 +21,7 @@ private:
         Node* parent;
         Node* leftBrother;
         Node* rightBrother;
-        int degree;
+        int degree{};
         bool mark;
 
         //auxiliary field for extract min;
@@ -37,12 +38,20 @@ private:
 
     };
 
-    void addToRootsList(Node* toAdd){
-        Node* leftHeadBrother = head->leftBrother;
-        toAdd->leftBrother->rightBrother = head;
-        head->leftBrother = toAdd->leftBrother;
-        toAdd->leftBrother = leftHeadBrother;
-        leftHeadBrother->rightBrother = toAdd;
+    void addToRootsList(Node* toAdd, bool allLevel){
+
+        if(allLevel) {
+            Node *leftHeadBrother = head->leftBrother;
+            toAdd->leftBrother->rightBrother = head;
+            head->leftBrother = toAdd->leftBrother;
+            toAdd->leftBrother = leftHeadBrother;
+            leftHeadBrother->rightBrother = toAdd;
+        } else{
+            toAdd->leftBrother = head->leftBrother;
+            toAdd->rightBrother = head;
+            toAdd->leftBrother->rightBrother = toAdd;
+            head->leftBrother = head;
+        }
 
         if(head->value > toAdd->value) {
             head = toAdd;
@@ -140,6 +149,61 @@ private:
         }
     }
 
+    Node* findNodeByValue(Node* toFind, T value){
+
+        if(toFind == nullptr) {
+            return nullptr;
+        }
+
+
+        if(toFind->value == value){
+            return toFind;
+        }
+
+        Node* res;
+        if(value < toFind->value){
+            res = findNodeByValue(toFind->child, value);
+        }
+        if (!res && ((toFind->parent && toFind->leftBrother != toFind->parent->child) ||
+            (!toFind->parent && toFind->leftBrother != head))) {
+            res = findNodeByValue(toFind->leftBrother, value);
+        }
+
+        if(res){
+            return res;
+        } else {
+            return nullptr;
+        }
+
+
+    }
+
+    void cut(Node* toCut){
+        if(toCut->leftBrother == toCut){
+            toCut->parent->child = nullptr;
+        } else {
+            toCut->leftBrother->rightBrother = toCut->rightBrother;
+            toCut->rightBrother->leftBrother = toCut->leftBrother;
+            if(toCut == toCut->parent->child){
+                toCut->parent->child = toCut->rightBrother;
+            }
+        }
+
+        addToRootsList(toCut, false);
+        toCut->parent = nullptr;
+        toCut->mark = false;
+    }
+
+    void cascadingCut(Node* toCut){
+        if(toCut->parent != nullptr){
+            if(!toCut->mark){
+                toCut->mark = true;
+            } else{
+                cut(toCut);
+                cascadingCut(toCut->parent);
+            }
+        }
+    }
     void print(Node* node, int degree){
 
         if(node == nullptr) {
@@ -185,7 +249,7 @@ public:
         if(head == nullptr){
             head = toInsert;
         } else {
-            addToRootsList(toInsert);
+            addToRootsList(toInsert, true);
         }
 
         size++;
@@ -203,7 +267,7 @@ public:
         Node* temp = toDelete->child;
 
         if(temp != nullptr) {
-            addToRootsList(temp);
+            addToRootsList(temp, true);
             temp = head;
             do {
                 temp->parent = nullptr;
@@ -223,6 +287,30 @@ public:
 
         size--;
         return toDelete->value;
+    }
+
+    void decreaseKey(T toDecrease, T decreased){
+
+        if(toDecrease <= decreased){
+            return;
+        }
+
+        Node* toFind = findNodeByValue(head, toDecrease);
+
+        toFind->value = decreased;
+        if(toFind->parent != nullptr && toFind->value < toFind->parent->value){
+            cut(toFind);
+            cascadingCut(toFind->parent);
+        }
+
+        if(toFind->value < head->value){
+            head = toFind;
+        }
+    }
+
+    void erase(T value){
+        decreaseKey(value, INT32_MIN);
+        extractMin();
     }
 
     void print(){
