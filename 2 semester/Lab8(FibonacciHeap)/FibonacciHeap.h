@@ -50,7 +50,7 @@ private:
             toAdd->leftBrother = head->leftBrother;
             toAdd->rightBrother = head;
             toAdd->leftBrother->rightBrother = toAdd;
-            head->leftBrother = head;
+            head->leftBrother = toAdd;
         }
 
         if(head->value > toAdd->value) {
@@ -155,25 +155,26 @@ private:
             return nullptr;
         }
 
-
+        std::cout << toFind->value << std::endl;
         if(toFind->value == value){
             return toFind;
         }
 
-        Node* res;
-        if(value < toFind->value){
+        Node* res = nullptr;
+        if(value > toFind->value){
             res = findNodeByValue(toFind->child, value);
+            if(res != nullptr)
+                return res;
         }
-        if (!res && ((toFind->parent && toFind->leftBrother != toFind->parent->child) ||
+        if (((toFind->parent && toFind->leftBrother != toFind->parent->child) ||
             (!toFind->parent && toFind->leftBrother != head))) {
             res = findNodeByValue(toFind->leftBrother, value);
+            if(res != nullptr){
+                return res;
+            }
         }
 
-        if(res){
-            return res;
-        } else {
-            return nullptr;
-        }
+        return nullptr;
 
 
     }
@@ -253,7 +254,6 @@ public:
         }
 
         size++;
-
     }
 
     T min(){
@@ -298,9 +298,10 @@ public:
         Node* toFind = findNodeByValue(head, toDecrease);
 
         toFind->value = decreased;
-        if(toFind->parent != nullptr && toFind->value < toFind->parent->value){
+        Node* parent = toFind->parent;
+        if(parent != nullptr && toFind->value < toFind->parent->value){
             cut(toFind);
-            cascadingCut(toFind->parent);
+            cascadingCut(parent);
         }
 
         if(toFind->value < head->value){
