@@ -155,13 +155,13 @@ private:
             return nullptr;
         }
 
-        std::cout << toFind->value << std::endl;
+//        std::cout << toFind->value << std::endl;
         if(toFind->value == value){
             return toFind;
         }
 
-        Node* res = nullptr;
-        if(value > toFind->value){
+        Node* res;
+        if(value >= toFind->value){
             res = findNodeByValue(toFind->child, value);
             if(res != nullptr)
                 return res;
